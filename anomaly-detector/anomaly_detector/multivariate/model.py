@@ -1,8 +1,9 @@
+import copy
 import os
 import time
 from copy import deepcopy
 from dataclasses import fields
-from typing import Dict, List, Union
+from typing import Any, Dict, List, Optional, Union
 
 import mlflow
 import numpy as np
@@ -45,11 +46,12 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
         self.threshold: float = None
         self.train_score_max: float = None
         self.train_score_min: float = None
-        self.model_path = os.path.join(self.config.save, "best_multi_ad_model.pt")
+        self.model_path: str = None
         self.variables: List[str] = None
 
-    def load_context(self, context):
-        self.load_checkpoint(context.artifacts["model"])
+    # def load_context(self, context):
+    #     print(context.artifacts)
+    #     self.load_checkpoint(context.artifacts["model"])
 
     def fit(self, data: pd.DataFrame, params: Dict = None):
         _, variables, values, config = self._verify_data_and_params(data, params)
@@ -58,6 +60,7 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
         _window = self.config.threshold_window + self.config.input_size
         self.pct_weight = get_multiple_variables_pct_weight_score(data, _window)
         self.config.data_dim = values.shape[1]
+        self.model_path = os.path.join(self.config.save, "best_multi_ad_model.pt")
         train_length = int(len(data) * self.config.train_ratio)
         valid_length = int(len(data) * self.config.val_ratio)
         train_data = values[:train_length]
@@ -101,7 +104,7 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
         )
         os.makedirs(self.config.save, exist_ok=True)
         model = MultivariateGraphAttnDetector(self.config)
-        print("init", list(model.parameters())[0])
+        # print("init", list(model.parameters())[0])
         optimizer = torch.optim.Adam(model.parameters(), lr=self.config.lr)
         criterion = AnomalyDetectionCriterion().to(self.config.device)
 
@@ -128,7 +131,7 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
                 best_val = valid_loss
                 self.model = model
                 self.save_checkpoint()
-                print("best_ckpt", list(model.parameters())[0])
+                # print("best_ckpt", list(model.parameters())[0])
 
         self.load_checkpoint(self.model_path)
         (
@@ -212,7 +215,9 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
                 )
         return loss_meter.avg, vae_loss_meter.avg, pred_loss_meter.avg
 
-    def predict(self, context, data: pd.DataFrame, params: Dict):
+    def predict(
+        self, context, data: pd.DataFrame, params: Optional[Dict[str, Any]] = None
+    ):
         effective_timestamps, variables, values, _ = self._verify_data_and_params(
             data, params
         )
@@ -231,8 +236,8 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
             contributor_rmses,
             total_rmses,
             _,
-            total_probs,
-            forecasts,
+            _,
+            _,
             attn_feats,
         ) = self.inference(values, True)
         contributor_scores = np.array(contributor_rmses)
@@ -262,13 +267,13 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
         )
         severity = compute_severity(inference_scores)
         severity[is_anomalies == False] = 0.0
-        inference_scores = inference_scores.tolist()
-        contributor_scores = contributor_scores.tolist()
-        total_rmses = total_rmses.tolist()
-        total_probs = total_probs.tolist()
-        severity = severity.tolist()
-        is_anomalies = is_anomalies.tolist()
-        forecasts = forecasts.tolist()
+        # inference_scores = inference_scores.tolist()
+        # contributor_scores = contributor_scores.tolist()
+        # total_rmses = total_rmses.tolist()
+        # total_probs = total_probs.tolist()
+        # severity = severity.tolist()
+        # is_anomalies = is_anomalies.tolist()
+        # forecasts = forecasts.tolist()
         if attn_feats is not None:
             inference_length = len(is_anomalies)
             attn_feats = torch.from_numpy(attn_feats)
@@ -278,7 +283,7 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
             attn_feats = (
                 attn_feats[-inference_length:] - previous_attn[-inference_length:]
             )
-        attn_feats = attn_feats if attn_feats is None else attn_feats.numpy().tolist()
+        attn_feats = attn_feats.numpy()
         return self._pack_response(
             effective_timestamps,
             variables,
@@ -289,7 +294,7 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
             attn_feats,
         )
 
-    def inference(self, values, compute_attn=False):
+    def inference(self, values, compute_attn=True):
         max_values = self.config.normalize_base.max_values
         min_values = self.config.normalize_base.min_values
         self.model.eval()
@@ -387,7 +392,7 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
         return input_size, threshold_window
 
     def compute_thresholds(self, data) -> (float, float, float):
-        _, total_rmses, _, _, _, _ = self.inference(data)
+        _, total_rmses, _, _, _, _ = self.inference(data, compute_attn=False)
         train_scores = total_rmses
         sorted_scores = np.sort(train_scores)
         threshold = sorted_scores[int(len(sorted_scores) * self.config.level)]
@@ -398,23 +403,23 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
     def _verify_data_and_params(self, data: pd.DataFrame, params):
         # check data
         if not isinstance(data, pd.DataFrame):
-            raise DataFormatError("data must be pandas.DataFrame.")
+            raise DataFormatError(f"data must be pandas.DataFrame not {type(data)}.")
 
         if TIMESTAMP not in data.columns:
             raise DataFormatError(f"There should be a `{TIMESTAMP}` column")
 
         # check params
-        start_time = params.get("start_time", data[TIMESTAMP][0])
-        end_time = params.get("end_time", data[TIMESTAMP][-1])
-        fill_na_method = params.get("fill_na_method", FillNAMethod.Linear)
+        start_time = params.get("start_time", data[TIMESTAMP].iloc[0])
+        end_time = params.get("end_time", data[TIMESTAMP].iloc[-1])
+        fill_na_method = params.get("fill_na_method", FillNAMethod.Linear.name)
         fill_na_value = params.get("fill_na_value", 0.0)
         params["input_size"], params["threshold_window"] = self.compute_window_sizes(
             params.get("sliding_window", None)
         )
-        params.pop("sliding_window")
 
         valid_fields = [f.name for f in fields(MultiADConfig)]
-        for key in params:
+
+        for key in copy.deepcopy(params):
             if key not in valid_fields:
                 params.pop(key)
 
@@ -427,6 +432,7 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
         )
         data, effective_timestamps = data_processor.process(data)
         variables = data.columns.to_list()
+        params["data_dim"] = len(variables)
         values = data.values
         config = MultiADConfig(**params)
         return effective_timestamps, variables, values, config
@@ -442,7 +448,6 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
         attn_feats,
     ):
         contributor_scores = torch.from_numpy(contributor_scores)
-        attn_feats = torch.from_numpy(attn_feats)
         top_k_contributors_idx = torch.argsort(
             contributor_scores, dim=-1, descending=True
         )[:, : MultiADConstants.TOP_CONTRIBUTORS_COUNT]
@@ -452,6 +457,7 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
         top_k_contributors = top_k_contributors / top_k_contributors.sum(
             dim=-1, keepdim=True
         )
+        attn_feats = torch.from_numpy(attn_feats)
         top_k_attn_scores = torch.gather(
             attn_feats,
             dim=1,
@@ -465,17 +471,17 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
         top_attn_scores = torch.gather(
             top_k_attn_scores, dim=-1, index=top_attn_scores_idx
         )
-        is_anomalies = is_anomalies.cpu().tolist()
-        top_k_contributors = top_k_contributors.cpu()
-        top_k_contributors_idx = top_k_contributors_idx.cpu()
-        top_attn_scores = top_attn_scores.cpu()
-        top_attn_scores_idx = top_attn_scores_idx.cpu()
+        contributor_scores = contributor_scores.cpu().numpy()
+        top_k_contributors = top_k_contributors.cpu().numpy()
+        top_k_contributors_idx = top_k_contributors_idx.cpu().numpy()
+        top_attn_scores = top_attn_scores.cpu().numpy()
+        top_attn_scores_idx = top_attn_scores_idx.cpu().numpy()
 
         num_series_names = len(variables)
         num_timestamps = len(timestamps)
         num_results = len(is_anomalies)
-        num_contributors = top_k_contributors.size(1)
-        num_attentions = top_attn_scores.size(2)
+        num_contributors = top_k_contributors.shape[1]
+        num_attentions = top_attn_scores.shape[2]
         diff = num_timestamps - num_results
         assert diff >= 0, "invalid length"
         results = []
@@ -492,9 +498,8 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
                         changed_values = []
                         changed_variables = []
                         for k in range(num_attentions):
-                            if abs(
-                                top_attn_scores[idx, j, k]
-                                > min(0.001, 1.0 / (1.25 * num_series_names))
+                            if abs(top_attn_scores[idx, j, k]) > min(
+                                0.001, 1.0 / (1.25 * num_series_names)
                             ):
                                 changed_values.append(top_attn_scores[idx, j, k])
                                 var_idx = top_attn_scores_idx[idx, j, k]

@@ -3,6 +3,7 @@ from typing import List, Union
 import pandas as pd
 from anomaly_detector.common.constants import TIMESTAMP, FillNAMethod
 from anomaly_detector.common.exception import *
+from anomaly_detector.common.time_util import DT_FORMAT, dt_to_str
 
 
 class MultiADDataProcessor:
@@ -48,6 +49,7 @@ class MultiADDataProcessor:
         data = data[sorted(data.columns)]  # sort columns
         data = self.fill_na(data)
         data, effective_timestamps = self.truncate_data(data)
+        effective_timestamps = [dt_to_str(x) for x in effective_timestamps]
         return data, effective_timestamps
 
     def fill_na(self, data: pd.DataFrame):
