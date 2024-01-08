@@ -1,0 +1,1 @@
+from .multivariate.model import MultivariateAnomalyDetector
