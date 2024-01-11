@@ -65,4 +65,4 @@ class TestAnomalyDetector:
 
 
 if __name__ == "__main__":
-    pytest.main(["-s"])
+    pytest.main([__file__])

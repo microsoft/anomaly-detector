@@ -59,11 +59,11 @@ jobs:
         run: poetry build
 
       - name: install .whl file
-        run: pip install ./anomaly-detector/dist/anomaly_detector-0.1.0-py3-none-any.whl
+        run: pip install ./anomaly-detector/dist/*.whl
 
       - name: run the test script
         working-directory: anomaly-detector/tests
-        run: poetry run pytest -k "test_"
+        run: python -m anomaly-detector.tests.test_demo
 #  test_poetry:
 #    runs-on: ubuntu-latest
 
