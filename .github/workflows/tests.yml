@@ -84,8 +84,11 @@ jobs:
       - name: install package by setup.py
         run: pip install .
 
+      - name: install pytest
+        run: pip install pytest
+
       - name: run the test script
-        run: pytest anomaly-detector/tests/test_demo.py
+        run: python anomaly-detector/tests/test_demo.py
 
 
     # Runs a single command using the runners shell
