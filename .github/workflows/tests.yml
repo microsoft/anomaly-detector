@@ -41,6 +41,7 @@ jobs:
       - name: run the test script
         working-directory: anomaly-detector/tests
         run: poetry run pytest -k "test_"
+
   test_on_poetry_whl:
     runs-on: ubuntu-latest
     steps:
@@ -62,8 +63,27 @@ jobs:
         run: pip install ./anomaly-detector/dist/*.whl
 
       - name: run the test script
-        working-directory: anomaly-detector/tests
         run: python -m anomaly-detector.tests.test_demo
+
+#  test_on_setup:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v4
+#
+#      - name: Set up Python
+#        uses: actions/setup-python@v5
+#        with:
+#          python-version: 3.11
+#
+#      - name: gen .whl file by poetry
+#        working-directory: anomaly-detector
+#        run: poetry build
+#
+#      - name: install .whl file
+#        run: pip install ./anomaly-detector/dist/anomaly_detector-0.1.0-py3-none-any.whl
+#
+#      - name: run the test script
+#        run: python -m anomaly-detector.tests.test_demo
 #  test_poetry:
 #    runs-on: ubuntu-latest
 
