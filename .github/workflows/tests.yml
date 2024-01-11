@@ -42,6 +42,11 @@ jobs:
         working-directory: anomaly-detector/tests
         run: poetry run pytest -k "test_"
 
+      - name: Analyze code with pylint
+        run: |
+          pip install pylint
+          pylint --exit-zero $(git ls-files '*.py')
+
   test_on_poetry_whl:
     runs-on: ubuntu-latest
     steps:
@@ -65,27 +70,22 @@ jobs:
       - name: run the test script
         run: python -m anomaly-detector.tests.test_demo
 
-#  test_on_setup:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v4
-#
-#      - name: Set up Python
-#        uses: actions/setup-python@v5
-#        with:
-#          python-version: 3.11
-#
-#      - name: gen .whl file by poetry
-#        working-directory: anomaly-detector
-#        run: poetry build
-#
-#      - name: install .whl file
-#        run: pip install ./anomaly-detector/dist/anomaly_detector-0.1.0-py3-none-any.whl
-#
-#      - name: run the test script
-#        run: python -m anomaly-detector.tests.test_demo
-#  test_poetry:
-#    runs-on: ubuntu-latest
+
+  test_on_setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      - name: install package by setup.py
+        run: python setup.py install
+
+      - name: run the test script
+        run: python -m anomaly_detector.tests.test_demo
 
 
     # Runs a single command using the runners shell
