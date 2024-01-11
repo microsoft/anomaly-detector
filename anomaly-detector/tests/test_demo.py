@@ -1,3 +1,5 @@
+import pickle
+
 import mlflow
 import pytest
 import pandas as pd
@@ -45,25 +47,21 @@ class TestAnomalyDetector:
             params = read_yaml_config(TEST_FILE_ROOT + "config.yaml")["bigger_start_time"]
             self.model.fit(train_data, params)
 
-    # def test_inference_data_smaller_than_window(self): 测试模型推理需要从本地load模型，但是在GitHub上进行测试的时候去哪里load模型呢？
-    #     with pytest.raises(Exception):
-    #         eval_data = pd.read_csv("testCase/testCase_10000_20/inference_data_smaller_than_window.csv")
-    #         params = read_yaml_config("testCase/testCase_10000_20/config.yaml")["normal_config"]
-    #         loaded_model = mlflow.pyfunc.load_model()
-    #         loaded_model.predict(eval_data, params)
+    def test_inference_data_smaller_than_window(self):
+        with pytest.raises((TypeError, RuntimeError)):
+            eval_data = pd.read_csv(TEST_FILE_ROOT + "inference_data_smaller_than_window.csv")
+            params = read_yaml_config(TEST_FILE_ROOT + "config.yaml")["normal_predict_config"]
+            with open(TEST_FILE_ROOT + 'model.pkl', 'rb') as f:
+                loaded_model = pickle.load(f)
+                loaded_model.predict(eval_data, params)
 
-    # def test_small_window(self):  # 窗口大小还有要求吗
-    #     with pytest.raises(InvalidParameterError, match="start_time cannot be later than end_time"):
-    #         train_data = pd.read_csv("testCase/testCase_10000_20/normal_data.csv")
-    #         params = read_yaml_config("testCase/testCase_10000_20/config.yaml")["small_window"]
-    #         self.model.fit(train_data, params)
-
-    # def test_inference_start_end_time(self):
-    #     with pytest.raises(InvalidParameterError, match="Cannot convert start_time or end_time"):
-    #         eval_data = pd.read_csv("testCase/testCase_10000_20/normal_data.csv")
-    #         params = read_yaml_config("testCase/testCase_10000_20/config.yaml")["normal_config"]
-    #         loaded_model = mlflow.pyfunc.load_model(MODEL_URL)
-    #         loaded_model.predict(eval_data, params)
+    def test_inference_start_end_time(self):
+        with pytest.raises(InvalidParameterError, match="Cannot convert start_time or end_time"):
+            eval_data = pd.read_csv("testCase/testCase_10000_20/normal_data.csv")
+            params = read_yaml_config("testCase/testCase_10000_20/config.yaml")["no_predict_start_time"]
+            with open(TEST_FILE_ROOT + 'model.pkl', 'rb') as f:
+                loaded_model = pickle.load(f)
+                loaded_model.predict(eval_data, params)
 
 
 if __name__ == "__main__":
