@@ -82,10 +82,10 @@ jobs:
           python-version: 3.11
 
       - name: install package by setup.py
-        run: python setup.py install
+        run: pip install .
 
       - name: run the test script
-        run: python -m anomaly_detector.tests.test_demo
+        run: pytest anomaly-detector/tests/test_demo.py
 
 
     # Runs a single command using the runners shell
