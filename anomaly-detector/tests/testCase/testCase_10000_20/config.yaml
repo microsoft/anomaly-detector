@@ -1,0 +1,16 @@
+normal_config:
+  sliding_window: 200
+  device: "cpu"
+bigger_start_time:
+  start_time: "2024-02-23T14:00:00Z"
+  end_time: "2023-01-03T00:00:00Z"
+  sliding_window: 200
+  device: "cpu"
+small_window:
+  sliding_window: 20
+  device: "cpu"
+big_window:
+  sliding_window: 3000
+  device: "cpu"
+#inference_data_smaller_than_window:
+#  sl
