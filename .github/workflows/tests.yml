@@ -91,13 +91,4 @@ jobs:
       - name: run the test script
         working-directory: anomaly-detector/tests
         run: python test_demo.py
-#          ,
 
-
-
-    # Runs a single command using the runners shell
-#      - name: install .whl file
-#        run: pip install ./anomaly-detector/dist/anomaly_detector-0.1.0-py3-none-any.whl
-#
-#      - name: Run the test script
-#        run: pytest anomaly-detector/tests/test_demo.py
