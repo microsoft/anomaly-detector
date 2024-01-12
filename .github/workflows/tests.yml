@@ -87,6 +87,10 @@ jobs:
 
       - name: install pytest
         run: pip install pytest
+
+      - name: print pythonpath
+        run: echo ${PYTHONPATH}
+
       - name: run the test script
 #        working-directory: anomaly-detector/tests
 #        run: python test_demo.py
@@ -98,7 +102,6 @@ jobs:
           echo ${PYTHONPATH},
 #          cd ${GITHUB_WORKSPACE}/tests,
           python test_demo.py
-
 
 
 
