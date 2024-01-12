@@ -5,8 +5,8 @@ import pytest
 import pandas as pd
 import yaml
 
-from anomaly-detector.anomaly_detector import MultivariateAnomalyDetector
-from anomaly-detector.anomaly_detector.common.exception import DataFormatError, InvalidParameterError
+from anomaly_detector import MultivariateAnomalyDetector
+from anomaly_detector.common.exception import DataFormatError, InvalidParameterError
 
 MODEL_URL = "runs:/bcfb06073804457388cb53b4107a8792/mvad_artifacts"
 TEST_FILE_ROOT = "testCase/testCase_10000_20/"
