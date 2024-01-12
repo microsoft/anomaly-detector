@@ -32,7 +32,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: 3.11
-#          cache: 'poetry'
+          cache: 'poetry'
 
       - name: install dependence
         working-directory: anomaly-detector
@@ -40,9 +40,7 @@ jobs:
 
       - name: run the test script
         working-directory: anomaly-detector/tests
-        run: |
-          pip install pytest
-          python test_demo.py
+        run: poetry run pytest -k "test_"
 
       - name: Analyze code with pylint
         run: |
