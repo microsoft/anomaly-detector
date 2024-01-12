@@ -1,0 +1,5 @@
+recursive-include anomaly-detector/anomaly_detector/univariate *.pyx
+recursive-include anomaly-detector/anomaly_detector/univariate *.c
+recursive-include anomaly-detector/anomaly_detector/univariate *.h
+recursive-include anomaly-detector/anomaly_detector/univariate *.py
+include setup.py

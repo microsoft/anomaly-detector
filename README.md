@@ -1,3 +1,21 @@
+# Install
+```python setup.py build_ext --inplace ```
+
+```python setup.py install```
+
+# Test
+
+```cd anomaly-detector```
+
+```python tests/uvad_test.py```
+
+# Sample
+
+```cd anomaly_detector```
+
+```python univariate/univariate_anomaly_detection.py```
+
+
 # Project
 
 > This repo has been populated by an initial template to help get you started. Please

@@ -1,7 +1,9 @@
 import os
 from pathlib import Path
-
-from setuptools import find_packages, setup
+from Cython.Build import cythonize
+from Cython.Distutils import build_ext
+from setuptools import find_packages, setup,Extension
+import numpy
 
 if __name__ == "__main__":
     import os
@@ -26,12 +28,21 @@ if __name__ == "__main__":
 
     REQUIREMENTS = _read_reqs("requirements.txt")
 
+    extensions = [
+    Extension("anomaly_detector.univariate._anomaly_kernel_cython", ["anomaly-detector/anomaly_detector/univariate/_anomaly_kernel_cython.pyx"],
+              define_macros=[('CYTHON_TRACE', '1')])
+]
+    cmdclass = {'build_ext': build_ext}
+    cmdclass.update({'build_ext': build_ext})
+
     setup(
         name="anomaly_detector",
-        packages=["anomaly_detector"],
+        packages=['anomaly_detector'],
         package_dir={"anomaly_detector": "./anomaly-detector/anomaly_detector"},
-        # package_data={"": extra_files},
+        # package_data={"": ['*.txt']},
+        ext_modules=cythonize(extensions),
         include_package_data=True,
+        cmdclass=cmdclass,
         version="0.1.0",
         license="MIT",
         description="Anomaly Detection",
@@ -45,6 +56,7 @@ if __name__ == "__main__":
             (".", ["README.md"]),
         ],
         keywords=["machine learning", "time series", "anomaly detection"],
+        include_dirs=[numpy.get_include()],
         install_requires=REQUIREMENTS,
         classifiers=[
             "Development Status :: 4 - Beta",

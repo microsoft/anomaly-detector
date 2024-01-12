@@ -1,0 +1,41 @@
+<MonitoringManagement eventVersion="1" version="1.0" timestamp="2018-05-07T00:00:00Z" namespace="AicpApiAnomalyDetector">
+  <Accounts>
+    <Account moniker="aicpapianomalydetectordiag" isDefault="true" />
+    <Account moniker="aicpapianomalydetectorsecurity" alias="AzSecurityStore" />
+    <Account moniker="aicpapianomalydetectoraudit" alias="AuditStore" />
+  </Accounts>
+  <!-- Linux mdsd usage documentation: https://jarvis.dc.ad.msft.net/?page=documents&section=1363da01-b6ed-43d4-970e-f89b011d591f&id=89b7a7f4-8cf1-4a76-b541-478d37fc760f  -->
+  <Management eventVolume="Medium" defaultRetentionInDays="29">
+    <!--
+      The identity TenantRole means MONITORING_IDENTITY, MONITORING_ROLE, and MONITORING_ROLE_INSTANCE will
+      uniquely identify any of your instances
+    -->
+    <Identity type="TenantRole" />
+    <!--
+      The diskQuotaInMB is a required parameter.  For 10,000 MB there should be 15,000 MB available on the disk  The CPU, memory and network can also be limited in the
+      AgentResourceUsage element's attributes.
+    -->
+    <AgentResourceUsage diskQuotaInMB="50000" cpuPercentUsage="50" />
+  </Management>
+  <Sources>
+    <!-- personalization -->
+    <Source name="microsoft.cloudai.anomalydetector.log" dynamic_schema="true" />
+    <Source name="microsoft.cloudai.anomalydetector.exception" dynamic_schema="true" />
+  </Sources>
+  <!-- Linux events documentation: https://jarvis.dc.ad.msft.net/?page=documents&section=9c95f4eb-8689-4c9f-81bf-82d688e860fd&id=762a440d-3a1e-4ff3-86d6-03c491c163b2   -->
+  <!--
+      Events can contain one or more Event elements.  The Event elements each describe a different kind of collector.
+      Events must be defined in the order of the mds2.xsd.
+  -->
+  <Events>
+    <MdsdEvents>
+      <!-- personalization -->
+      <MdsdEventSource source="microsoft.cloudai.anomalydetector.log">
+        <RouteEvent eventName="AnomalyDetectorLog" storeType="CentralBond" priority="Normal" />
+      </MdsdEventSource>
+      <MdsdEventSource source="microsoft.cloudai.anomalydetector.exception">
+        <RouteEvent eventName="AnomalyDetectorException" storeType="CentralBond" priority="Normal" />
+      </MdsdEventSource>
+    </MdsdEvents>
+  </Events>
+</MonitoringManagement>
