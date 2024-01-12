@@ -36,7 +36,6 @@ if __name__ == "__main__":
             "anomaly_detector": "./anomaly-detector/anomaly_detector",
             "anomaly_detector.common": "./anomaly-detector/anomaly_detector/common",
             "anomaly_detector.multivariate": "./anomaly-detector/anomaly_detector/multivariate",
-            # "tests": "./anomaly-detector/tests"
         },
         # package_data={"": extra_files},
         include_package_data=True,
