@@ -42,7 +42,7 @@ jobs:
         working-directory: anomaly-detector/tests
         run: |
           pip install pytest
-          poetry run pytest -k "test_"
+          pytest -k "test_"
 
       - name: Analyze code with pylint
         run: |
