@@ -40,7 +40,9 @@ jobs:
 
       - name: run the test script
         working-directory: anomaly-detector/tests
-        run: poetry run pytest -k "test_"
+        run: |
+          pip install pytest,
+          poetry run pytest -k "test_"
 
       - name: Analyze code with pylint
         run: |
@@ -67,12 +69,11 @@ jobs:
       - name: install .whl file
         run: pip install ./anomaly-detector/dist/*.whl
 
-      - name: install pytest
-        run: pip install pytest
-
       - name: run the test script
         working-directory: anomaly-detector/tests
-        run: python test_demo.py
+        run: |
+          pip install pytest,
+          python test_demo.py
 
 
   test_on_setup:
@@ -90,10 +91,9 @@ jobs:
       - name: install package by setup.py
         run: pip install .
 
-      - name: install pytest
-        run: pip install pytest
-
       - name: run the test script
         working-directory: anomaly-detector/tests
-        run: python test_demo.py
+        run: |
+          pip install pytest
+          python test_demo.py
 
