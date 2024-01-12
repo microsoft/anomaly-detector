@@ -41,7 +41,7 @@ jobs:
       - name: run the test script
         working-directory: anomaly-detector/tests
         run: |
-          pip install pytest,
+          pip install pytest
           poetry run pytest -k "test_"
 
       - name: Analyze code with pylint
@@ -72,7 +72,7 @@ jobs:
       - name: run the test script
         working-directory: anomaly-detector/tests
         run: |
-          pip install pytest,
+          pip install pytest
           python test_demo.py
 
 
