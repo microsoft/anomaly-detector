@@ -89,7 +89,7 @@ jobs:
         run: pip install pytest
 
       - name: run the test script
-        working-directory: anomaly-detector/tests
+#        working-directory: anomaly-detector/tests
         run: python test_demo.py
 
 

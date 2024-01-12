@@ -1,6 +1,4 @@
 import pickle
-#
-import mlflow
 import pytest
 import pandas as pd
 import yaml
@@ -8,9 +6,7 @@ import yaml
 from anomaly_detector import MultivariateAnomalyDetector
 from anomaly_detector.common.exception import DataFormatError, InvalidParameterError
 
-MODEL_URL = "runs:/bcfb06073804457388cb53b4107a8792/mvad_artifacts"
 TEST_FILE_ROOT = "testCase/testCase_10000_20/"
-mlflow.set_tracking_uri(uri="http://127.0.0.1:8080")
 
 
 def read_yaml_config(path: str) -> dict:
