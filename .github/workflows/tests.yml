@@ -95,11 +95,12 @@ jobs:
 #        run: python test_demo.py
         run: |
           echo ${PYTHONPATH},
-          export PYTHONPATH="${PYTHONPATH}:$(pwd)",
+          export PYTHONPATH="${PYTHONPATH}:${GITHUB_WORKSPACE}",
           echo ${GITHUB_WORKSPACE},
           echo ${PYTHONPATH},
-          python anomaly-detector/tests/test_demo.py
-#          cd ${GITHUB_WORKSPACE}/anomaly-detector/tests,
+          cd ${GITHUB_WORKSPACE}/anomaly-detector/tests，
+          python test_demo.py
+#          ,
 
 
 
