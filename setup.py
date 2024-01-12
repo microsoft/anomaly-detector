@@ -28,8 +28,8 @@ if __name__ == "__main__":
 
     setup(
         name="anomaly_detector",
-        packages=["anomaly_detector"],
-        package_dir={"anomaly_detector": "./anomaly-detector/anomaly_detector"},
+        packages=find_packages(),
+        # package_dir=all_packages,
         # package_data={"": extra_files},
         include_package_data=True,
         version="0.1.0",
