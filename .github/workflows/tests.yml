@@ -69,7 +69,9 @@ jobs:
 
       - name: run the test script
         working-directory: anomaly-detector/tests
-        run: python test_demo.py
+        run: |
+          echo ${PYTHONPATH},
+          python test_demo.py
 
 
   test_on_setup:
