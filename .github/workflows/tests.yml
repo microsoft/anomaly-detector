@@ -68,6 +68,7 @@ jobs:
         run: pip install ./anomaly-detector/dist/*.whl
 
       - name: run the test script
+        working-directory: anomaly-detector/tests
         run: python -m anomaly-detector.tests.test_demo
 
 
