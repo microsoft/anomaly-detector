@@ -93,7 +93,7 @@ jobs:
 #        run: python test_demo.py
         run: |
           export PYTHONPATH="${PYTHONPATH}:$(pwd)",
-          cd anomaly-detector/tests,
+          cd ./anomaly-detector/tests,
           python test_demo.py
 
 
