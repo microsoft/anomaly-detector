@@ -91,7 +91,10 @@ jobs:
       - name: run the test script
 #        working-directory: anomaly-detector/tests
 #        run: python test_demo.py
-        run: python anomaly-detector/tests/test_demo.py
+        run: |
+          export PYTHONPATH="${PYTHONPATH}:$(pwd)",
+          cd anomaly-detector/tests,
+          python test_demo.py
 
 
 
