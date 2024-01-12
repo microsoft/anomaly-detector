@@ -98,8 +98,8 @@ jobs:
           export PYTHONPATH="${PYTHONPATH}:$(pwd)",
           echo ${GITHUB_WORKSPACE},
           echo ${PYTHONPATH},
-#          cd ${GITHUB_WORKSPACE}/anomaly-detector/tests,
           python anomaly-detector/tests/test_demo.py
+#          cd ${GITHUB_WORKSPACE}/anomaly-detector/tests,
 
 
 
