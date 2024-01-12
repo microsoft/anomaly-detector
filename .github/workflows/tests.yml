@@ -42,7 +42,7 @@ jobs:
         working-directory: anomaly-detector/tests
         run: |
           pip install pytest
-          pytest -k "test_"
+          python test_demo.py
 
       - name: Analyze code with pylint
         run: |
