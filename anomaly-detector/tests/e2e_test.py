@@ -15,7 +15,7 @@ def main():
     timestamps = pd.date_range(start="2023-01-03", periods=10000, freq="H")
     training_data["timestamp"] = timestamps.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-    params = {"sliding_window": 200, "device": "cuda"}
+    params = {"sliding_window": 200, "device": "cpu"}
     with mlflow.start_run():
         mlflow.log_params(params)
         mlflow.set_tag("Training Info", "Basic LR model for iris data")

@@ -1,0 +1,97 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  test:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4
+
+      - name: Install poetry
+        run: pipx install poetry
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+          cache: 'poetry'
+
+      - name: install dependence
+        working-directory: anomaly-detector
+        run: poetry install
+
+      - name: run the test script
+        working-directory: anomaly-detector/tests
+        run: poetry run pytest -k "test_"
+
+      - name: Analyze code with pylint
+        run: |
+          pip install pylint
+          pylint --exit-zero $(git ls-files '*.py')
+
+  test_on_poetry_whl:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install poetry
+        run: pipx install poetry
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      - name: gen .whl file by poetry
+        working-directory: anomaly-detector
+        run: poetry build
+
+      - name: install .whl file
+        run: pip install ./anomaly-detector/dist/*.whl
+
+      - name: run the test script
+        working-directory: anomaly-detector/tests
+        run: |
+          pip install pytest
+          python test_demo.py
+
+
+  test_on_setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+          cache: 'pip'
+          cache-dependency-path: setup.py
+
+      - name: install package by setup.py
+        run: pip install .
+
+      - name: run the test script
+        working-directory: anomaly-detector/tests
+        run: |
+          pip install pytest
+          python test_demo.py
+
