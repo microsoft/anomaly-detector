@@ -7,10 +7,11 @@ import pandas as pd
 import sys
 sys.path.append(os.path.abspath("anomaly_detector"))
 from univariate.util.enum import default_gran_window
-from univariate.util.fields import DetectType
+from univariate.util.fields import DetectType, IsAnomaly, ExpectedValue, Severity, IsPositiveAnomaly, IsNegativeAnomaly
 from univariate.univariate_anomaly_detection import UnivariateAnomalyDetector
+from univariate.util.fields import DetectType, IsAnomaly, ExpectedValue, Severity, IsPositiveAnomaly, IsNegativeAnomaly
 
-def call_entire_endpoint(content):
+def call_entire(content):
     
     # input: DataFrame
     data = pd.DataFrame(content["request"]["series"])
@@ -23,11 +24,6 @@ def call_entire_endpoint(content):
     # predict
     params_, results_, period_, spectrum_period_, model_id_, do_fill_up_ = detector.predict(data, params)
     
-    # refine result
-    results_ = results_.get("results").sort_index()
-    expected_value, upper_margin, lower_margin, anomaly_neg, anomaly_pos, anomaly, severity, boundary_units, anomaly_scores \
-            = detector.get_margins(results_, params_.get('params')['sensitivity'], model_id_.get('model_id'), params_.get('params')['boundaryVersion'], False)
-
     # compare period
     if 'period' in content['response'] and period_.get('period') != content['response']['period']:
         return False, 'Error period'
@@ -37,15 +33,15 @@ def call_entire_endpoint(content):
 
     # compare is anomaly
     if 'isAnomaly' in content['response']:
-        if len(anomaly) != len(content['response']['isAnomaly']):
+        if len(results_.get('results')[IsAnomaly]) != len(content['response']['isAnomaly']):
             return False, 'isAnomaly length incorrect'
         else:
-            for i in range(len(anomaly)):
-                if anomaly[i] != content['response']['isAnomaly'][i]:
+            for i in range(len(results_.get('results')[IsAnomaly])):
+                if results_.get('results')[IsAnomaly].iloc[i] != content['response']['isAnomaly'][i]:
                     return False, 'isAnomaly not match'
     if 'expectedValues' in content['response']:
         tolerant_ratio = 0.05
-        for true_exp, new_exp in zip(content['response']['expectedValues'], expected_value):
+        for true_exp, new_exp in zip(content['response']['expectedValues'], results_.get('results')[ExpectedValue]):
             upper = true_exp + tolerant_ratio * abs(true_exp)
             lower = true_exp - tolerant_ratio * abs(true_exp)
             if new_exp < lower or new_exp > upper:
@@ -54,7 +50,7 @@ def call_entire_endpoint(content):
     # if "severity" in content["response"] and "severity" in result:
     if "severity" in content["response"]:
         tolerant_ratio = 0.05
-        for true_severity, new_severity in zip(content['response']['severity'], severity):
+        for true_severity, new_severity in zip(content['response']['severity'], results_.get('results')['Severity']):
             upper = true_severity + tolerant_ratio * abs(true_severity)
             lower = true_severity - tolerant_ratio * abs(true_severity)
             if new_severity < lower or new_severity > upper:
@@ -63,7 +59,7 @@ def call_entire_endpoint(content):
     return True, "Success"
 
 
-def call_last_endpoint(content):
+def call_last(content):
     
     # input: DataFrame
     data = pd.DataFrame(content["request"]["series"])
@@ -76,9 +72,6 @@ def call_last_endpoint(content):
     # predict
     params_, results_, period_, spectrum_period_, model_id_, do_fill_up_ = detector.predict(data, params)
     
-    # refine result
-    expected_value, upper_margin, lower_margin, anomaly_neg, anomaly_pos, anomaly, severity, boundary_units, anomaly_scores \
-            = detector.get_margins(results_.get("results"), params_.get('params')['sensitivity'], model_id_.get('model_id'), params_.get('params')['boundaryVersion'], last=True)
     # get suggested_window
     if period_.get("period") != 0:
             suggested_window = 4 * period_.get("period") + 1
@@ -94,14 +87,14 @@ def call_last_endpoint(content):
     if 'spectrumPeriod' in content['response'] and spectrum_period_.get('spectrum_period') != content['response']['spectrumPeriod']:
         return False, 'Error spectrumPeriod'
 
-    if 'isAnomaly' in content['response'] and anomaly != content['response']['isAnomaly']:
+    if 'isAnomaly' in content['response'] and results_.get('results')[IsAnomaly].iloc[-1] != content['response']['isAnomaly']:
         return False, 'isAnomaly not match'
 
-    if 'isPositiveAnomaly' in content['response'] and anomaly_pos != content['response'][
+    if 'isPositiveAnomaly' in content['response'] and results_.get('results')[IsPositiveAnomaly].iloc[-1] != content['response'][
         'isPositiveAnomaly']:
         return False, 'isPositiveAnomaly not match'
 
-    if 'isNegativeAnomaly' in content['response'] and anomaly_neg != content['response'][
+    if 'isNegativeAnomaly' in content['response'] and results_.get('results')[IsNegativeAnomaly].iloc[-1] != content['response'][
         'isNegativeAnomaly']:
         return False, 'isNegativeAnomaly not match'
 
@@ -110,7 +103,7 @@ def call_last_endpoint(content):
         true_exp = content['response']['expectedValue']
         upper = true_exp + tolerant_ratio * abs(true_exp)
         lower = true_exp - tolerant_ratio * abs(true_exp)
-        if expected_value < lower or expected_value > upper:
+        if results_.get('results')[ExpectedValue].iloc[-1] < lower or results_.get('results')[ExpectedValue].iloc[-1] > upper:
             return False, 'expectedValue difference exceed 5 percents'
 
     if 'severity' in content['response']:
@@ -118,7 +111,7 @@ def call_last_endpoint(content):
         true_severity = content['response']['severity']
         upper = true_severity + tolerant_ratio * abs(true_severity)
         lower = true_severity - tolerant_ratio * abs(true_severity)
-        if severity < lower or severity > upper:
+        if results_.get('results')[Severity].iloc[-1] < lower or results_.get('results')[Severity].iloc[-1] > upper:
             return False, 'severity difference exceed 5 percents'
 
     return True, "Success"
@@ -142,14 +135,14 @@ class TestFunctional(unittest.TestCase):
                 content = json.load(f)
             
             if content['type'] == 'entire':
-                ret = call_entire_endpoint(content)
+                ret = call_entire(content)
                 try:
                     self.assertTrue(ret[0])
                 except Exception as e:
                     self.verificationErrors.append(f"{case} {ret[1]} {str(e)}")
             
             elif content['type'] == 'last':
-                ret = call_last_endpoint(content)
+                ret = call_last(content)
                 try:
                     self.assertTrue(ret[0])
                 except Exception as e:

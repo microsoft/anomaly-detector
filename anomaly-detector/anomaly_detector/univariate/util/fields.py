@@ -12,6 +12,9 @@ Value = 'Value'
 AnomalyId = "Id"
 AnomalyScore = "Score"
 Trend = "Trend"
+Severity = 'Severity'
+BoundaryUnit = 'BoundaryUnit'
+AnomalyScore = 'AnomalyScore'
 
 DEFAULT_TREND_TYPE = "spline"
 DEFAULT_PERIOD_THRESH = 0.9
