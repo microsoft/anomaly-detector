@@ -1,3 +1,8 @@
+# Environment
+python = 3.11 
+
+R >= 4.0
+
 # Install
 ```python setup.py build_ext --inplace ```
 
