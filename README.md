@@ -4,22 +4,20 @@ python = 3.11
 R >= 4.0
 
 # Install
-```python setup.py build_ext --inplace ```
 
-```python setup.py install```
+```git clone https://github.com/microsoft/anomaly-detector.git```
+
+```cd anomaly-detector```
+
+```pip install -r requirements.txt```
+
+```python setup.py build_ext --inplace ```
 
 # Test
 
 ```cd anomaly-detector```
 
 ```python tests/uvad_test.py```
-
-# Sample
-
-```cd anomaly_detector```
-
-```python univariate/univariate_anomaly_detection.py```
-
 
 # Project
 
