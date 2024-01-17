@@ -1,10 +1,10 @@
 from enum import Enum
 
-IsAnomaly = "IsAnomaly"
-IsNegativeAnomaly = "IsNegativeAnomaly"
-IsPositiveAnomaly = "IsPositiveAnomaly"
-Period = "Period"
-ExpectedValue = "ExpectedValues"
+IsAnomaly = "is_anomaly"
+IsNegativeAnomaly = "is_negative_anomaly"
+IsPositiveAnomaly = "is_positive_anomaly"
+Period = "period"
+ExpectedValue = "expected_value"
 ESDRank = 'ESDRank'
 StandardFilterRank = 'DeviationRank'
 Reminder = 'Reminder'
@@ -14,7 +14,9 @@ AnomalyScore = "Score"
 Trend = "Trend"
 Severity = 'Severity'
 BoundaryUnit = 'BoundaryUnit'
-AnomalyScore = 'AnomalyScore'
+UpperMargin = 'upper_margin'
+LowerMargin = 'lower_margin'
+SuggestedWindow = 'suggested_window'
 
 DEFAULT_TREND_TYPE = "spline"
 DEFAULT_PERIOD_THRESH = 0.9

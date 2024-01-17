@@ -9,7 +9,7 @@ from univariate.util.enum import default_gran_window
 from common.exception import AnomalyDetectionRequestError
 
 from univariate import AnomalyDetectionModel
-from univariate.util.fields import DEFAULT_PERIOD, DEFAULT_GRANULARITY_NONE,DEFAULT_MARGIN_FACTOR, DEFAULT_FILL_UP_MODE, FillUpMode, BoundaryVersion, VALUE_LOWER_BOUND, VALUE_UPPER_BOUND, DetectType, ExpectedValue, IsAnomaly, IsNegativeAnomaly, IsPositiveAnomaly, AnomalyScore, Severity, BoundaryUnit
+from univariate.util.fields import DEFAULT_PERIOD, DEFAULT_GRANULARITY_NONE,DEFAULT_MARGIN_FACTOR, DEFAULT_FILL_UP_MODE, FillUpMode, BoundaryVersion, VALUE_LOWER_BOUND, VALUE_UPPER_BOUND, DetectType, ExpectedValue, UpperMargin, LowerMargin, IsNegativeAnomaly, IsPositiveAnomaly, IsAnomaly, Period, SuggestedWindow
 from univariate.util import BoundaryVersion
 from univariate.util.refine import get_margins
 
@@ -88,10 +88,6 @@ class UnivariateAnomalyDetector:
             self.error_msg = InvalidInputFormat
             return
         
-        # print(data)
-        # check granularity filed.
-        # If it is not present or none, then customInterval, 'timestamp' in series will be ignored.
-        # And fil up strategy is set 'nofill'.
         if 'granularity' in params:
             if params['granularity'] not in Granularity.__members__.keys():
                 self.error_code = 'InvalidGranularity'
@@ -99,7 +95,7 @@ class UnivariateAnomalyDetector:
                 return
             model_params['granularity'] = params['granularity'] = Granularity[params['granularity']]
         else:
-            params['granularity'] = DEFAULT_GRANULARITY_NONE
+            model_params['granularity'] = params['granularity'] = DEFAULT_GRANULARITY_NONE
 
         ### check for optional parameters
 
@@ -248,28 +244,65 @@ class UnivariateAnomalyDetector:
         results, period, spectrum_period, model_id, do_fill_up = detector.detect(
             period=params.get('period',DEFAULT_PERIOD), last_value=data[-1] if params['detect_mode'] == DetectType.LATEST else None)
 
+        try:
+            results["timestamp"] = [x['timestamp'] for x in data]
+        except KeyError:
+            results["timestamp"] = [x for x in range(len(data))]
+
+        results_items= {}
         if params['detect_mode'] == DetectType.ENTIRE:
             
             results = results.sort_index()        
             expected_value, upper_margin, lower_margin, anomaly_neg, anomaly_pos, anomaly, severity, boundary_units, anomaly_scores \
                 = get_margins(results, params['sensitivity'], model_id, params['boundaryVersion'], False)
+            
+            results_items[ExpectedValue] = expected_value.tolist()
+            results_items[UpperMargin] = np.atleast_1d(upper_margin).tolist()
+            results_items[LowerMargin] = np.atleast_1d(lower_margin).tolist()
+            results_items[IsNegativeAnomaly] = anomaly_neg.tolist()
+            results_items[IsPositiveAnomaly] = anomaly_pos.tolist()
+            results_items[IsAnomaly] = anomaly.tolist()
+            results_items[Period] = period
+
+            timestamps = results["timestamp"].tolist()
+
+            result_list = [
+                {"timestamp": timestamp, "result": {
+                    ExpectedValue: results_items[ExpectedValue][i],
+                    UpperMargin: results_items[UpperMargin][i],
+                    LowerMargin: results_items[LowerMargin][i],
+                    IsNegativeAnomaly: results_items[IsNegativeAnomaly][i],
+                    IsPositiveAnomaly: results_items[IsPositiveAnomaly][i],
+                    IsAnomaly: results_items[IsAnomaly][i],
+                    Period: results_items[Period]
+                }}
+                for i, timestamp in enumerate(timestamps)
+            ]
         else:
             expected_value, upper_margin, lower_margin, anomaly_neg, anomaly_pos, anomaly, severity, boundary_units, anomaly_scores \
                 = get_margins(results, params['sensitivity'], model_id, params['boundaryVersion'], True)        
+            
+            # get suggested_window
+            if period != 0:
+                    suggested_window = 4 * period + 1
+            elif model_params['granularity'].name in default_gran_window:
+                suggested_window = default_gran_window[model_params['granularity'].name] + 1
+            else:
+                suggested_window = 0
+            
+            timestamp = results["timestamp"].tolist()[-1]
 
-        results[ExpectedValue] = expected_value
-        results[IsAnomaly] = anomaly
-        results[IsPositiveAnomaly] = anomaly_pos
-        results[IsNegativeAnomaly] = anomaly_neg
-        results[Severity] = severity
-        results[BoundaryUnit] = boundary_units
-        results[AnomalyScore] = anomaly_scores
+            result_list = [
+                {"timestamp": timestamp, "result": {
+                    ExpectedValue: expected_value,
+                    UpperMargin: upper_margin,
+                    LowerMargin: lower_margin,
+                    IsNegativeAnomaly: anomaly_neg,
+                    IsPositiveAnomaly: anomaly_pos,
+                    IsAnomaly: anomaly,
+                    Period: period,
+                    SuggestedWindow: suggested_window
+                }}             
+            ]
         
-        return [
-            {"params": params},
-            {"results": results},
-            {"period": period},
-            {"spectrum_period": spectrum_period},
-            {"model_id": model_id},
-            {"do_fill_up": do_fill_up}
-        ]
+        return result_list

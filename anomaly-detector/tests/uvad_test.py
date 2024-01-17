@@ -6,10 +6,11 @@ from enum import Enum
 import pandas as pd
 import sys
 sys.path.append(os.path.abspath("anomaly_detector"))
+from collections import Counter
 from univariate.util.enum import default_gran_window
 from univariate.util.fields import DetectType, IsAnomaly, ExpectedValue, Severity, IsPositiveAnomaly, IsNegativeAnomaly
 from univariate.univariate_anomaly_detection import UnivariateAnomalyDetector
-from univariate.util.fields import DetectType, IsAnomaly, ExpectedValue, Severity, IsPositiveAnomaly, IsNegativeAnomaly
+from univariate.util.fields import DetectType, IsAnomaly, ExpectedValue, Severity, IsPositiveAnomaly, IsNegativeAnomaly, Period
 
 def call_entire(content):
     
@@ -22,40 +23,27 @@ def call_entire(content):
     # init model
     detector = UnivariateAnomalyDetector()
     # predict
-    params_, results_, period_, spectrum_period_, model_id_, do_fill_up_ = detector.predict(data, params)
-    
+    response = detector.predict(data, params)
     # compare period
-    if 'period' in content['response'] and period_.get('period') != content['response']['period']:
+    if 'period' in content['response'] and response[0].get('result')[Period] != content['response']['period']:
         return False, 'Error period'
-
-    if 'spectrumPeriod' in content['response'] and spectrum_period_.get('spectrum_period') != content['response']['spectrumPeriod']:
-        return False, 'Error spectrumPeriod'
 
     # compare is anomaly
     if 'isAnomaly' in content['response']:
-        if len(results_.get('results')[IsAnomaly]) != len(content['response']['isAnomaly']):
+        if len(response) != len(content['response']['isAnomaly']):
             return False, 'isAnomaly length incorrect'
         else:
-            for i in range(len(results_.get('results')[IsAnomaly])):
-                if results_.get('results')[IsAnomaly].iloc[i] != content['response']['isAnomaly'][i]:
+            for i in range(len(response)):
+                if response[i]['result'][IsAnomaly] != content['response']['isAnomaly'][i]:
                     return False, 'isAnomaly not match'
     if 'expectedValues' in content['response']:
         tolerant_ratio = 0.05
-        for true_exp, new_exp in zip(content['response']['expectedValues'], results_.get('results')[ExpectedValue]):
+        for true_exp, new_exp in zip(content['response']['expectedValues'], [item["result"][ExpectedValue] for item in response]):
             upper = true_exp + tolerant_ratio * abs(true_exp)
             lower = true_exp - tolerant_ratio * abs(true_exp)
             if new_exp < lower or new_exp > upper:
                 return False, 'expectedValues difference exceed 5 percents'
     
-    # if "severity" in content["response"] and "severity" in result:
-    if "severity" in content["response"]:
-        tolerant_ratio = 0.05
-        for true_severity, new_severity in zip(content['response']['severity'], results_.get('results')['Severity']):
-            upper = true_severity + tolerant_ratio * abs(true_severity)
-            lower = true_severity - tolerant_ratio * abs(true_severity)
-            if new_severity < lower or new_severity > upper:
-                return False, 'severity difference exceed 5 percents'
-
     return True, "Success"
 
 
@@ -70,31 +58,19 @@ def call_last(content):
     # init model
     detector = UnivariateAnomalyDetector()
     # predict
-    params_, results_, period_, spectrum_period_, model_id_, do_fill_up_ = detector.predict(data, params)
-    
-    # get suggested_window
-    if period_.get("period") != 0:
-            suggested_window = 4 * period_.get("period") + 1
-    elif params_.get('params')['granularity'].name in default_gran_window:
-        suggested_window = default_gran_window[params_.get('params')['granularity'].name] + 1
-    else:
-        suggested_window = 0
-    
+    response = detector.predict(data, params)
     # compare period
-    if 'period' in content['response'] and period_.get('period') != content['response']['period']:
+    if 'period' in content['response'] and response[0].get('result')[Period] != content['response']['period']:
         return False, 'Error period'
 
-    if 'spectrumPeriod' in content['response'] and spectrum_period_.get('spectrum_period') != content['response']['spectrumPeriod']:
-        return False, 'Error spectrumPeriod'
-
-    if 'isAnomaly' in content['response'] and results_.get('results')[IsAnomaly].iloc[-1] != content['response']['isAnomaly']:
+    if 'isAnomaly' in content['response'] and response[0].get('result')[IsAnomaly] != content['response']['isAnomaly']:
         return False, 'isAnomaly not match'
 
-    if 'isPositiveAnomaly' in content['response'] and results_.get('results')[IsPositiveAnomaly].iloc[-1] != content['response'][
+    if 'isPositiveAnomaly' in content['response'] and response[0].get('result')[IsPositiveAnomaly] != content['response'][
         'isPositiveAnomaly']:
         return False, 'isPositiveAnomaly not match'
 
-    if 'isNegativeAnomaly' in content['response'] and results_.get('results')[IsNegativeAnomaly].iloc[-1] != content['response'][
+    if 'isNegativeAnomaly' in content['response'] and response[0].get('result')[IsNegativeAnomaly] != content['response'][
         'isNegativeAnomaly']:
         return False, 'isNegativeAnomaly not match'
 
@@ -103,16 +79,8 @@ def call_last(content):
         true_exp = content['response']['expectedValue']
         upper = true_exp + tolerant_ratio * abs(true_exp)
         lower = true_exp - tolerant_ratio * abs(true_exp)
-        if results_.get('results')[ExpectedValue].iloc[-1] < lower or results_.get('results')[ExpectedValue].iloc[-1] > upper:
+        if response[0].get('result')[ExpectedValue] < lower or response[0].get('result')[ExpectedValue] > upper:
             return False, 'expectedValue difference exceed 5 percents'
-
-    if 'severity' in content['response']:
-        tolerant_ratio = 0.05
-        true_severity = content['response']['severity']
-        upper = true_severity + tolerant_ratio * abs(true_severity)
-        lower = true_severity - tolerant_ratio * abs(true_severity)
-        if results_.get('results')[Severity].iloc[-1] < lower or results_.get('results')[Severity].iloc[-1] > upper:
-            return False, 'severity difference exceed 5 percents'
 
     return True, "Success"
 
@@ -121,6 +89,7 @@ class TestFunctional(unittest.TestCase):
         self.verificationErrors = []
 
     def tearDown(self):
+
         self.assertEqual([], self.verificationErrors)
 
     def test_functional(self):
