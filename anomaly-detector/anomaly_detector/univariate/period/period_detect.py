@@ -1,6 +1,6 @@
-from univariate.util import DEFAULT_TREND_TYPE, DEFAULT_DETECTOR_TYPE, \
+from anomaly_detector.univariate.util import DEFAULT_TREND_TYPE, DEFAULT_DETECTOR_TYPE, \
     DEFAULT_GRANULARITY, DEFAULT_PERIOD_THRESH, DEFAULT_MIN_VAR, DEFAULT_INTERVAL
-from univariate.period import SimpleDetector, SpectrumDetector
+from anomaly_detector.univariate.period import SimpleDetector, SpectrumDetector
 
 
 def period_detection(series, trend_type=DEFAULT_TREND_TYPE, thresh=DEFAULT_PERIOD_THRESH,

@@ -10,10 +10,10 @@ from .._anomaly_kernel_cython import median_filter
 import json
 from .._anomaly_kernel_cython import calculate_esd_values
 from statsmodels import robust
-from univariate.util.date_utils import get_date_difference
-from univariate.util.fields import DEFAULT_ALPHA, YEAR_SECOND, MONTH_SECOND, WEEK_SECOND, \
+from anomaly_detector.univariate.util.date_utils import get_date_difference
+from anomaly_detector.univariate.util.fields import DEFAULT_ALPHA, YEAR_SECOND, MONTH_SECOND, WEEK_SECOND, \
     DAY_SECOND, HOUR_SECOND, MINUTE_SECOND, Granularity, SECOND, MICRO_SECOND
-from univariate.resource.error_message import ValueOverflow
+from anomaly_detector.univariate.resource.error_message import ValueOverflow
 
 with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'critical_table.txt')) as json_file:
     critical_table = json.load(json_file)

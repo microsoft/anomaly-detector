@@ -1,7 +1,7 @@
 import numpy as np
-from univariate.util import Value, ExpectedValue, IsAnomaly, IsNegativeAnomaly, IsPositiveAnomaly, \
+from anomaly_detector.univariate.util import Value, ExpectedValue, IsAnomaly, IsNegativeAnomaly, IsPositiveAnomaly, \
     AnomalyScore, Trend, EPS
-from univariate.util import boundary_utils, ModelType, BoundaryVersion
+from anomaly_detector.univariate.util import boundary_utils, ModelType, BoundaryVersion
 
 def refine_margins(actual_values, expected_values, is_anomaly, anomaly_neg, anomaly_pos, sensitivity, upper_margins,
                 lower_margins):

@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from Cython.Build import cythonize
 from Cython.Distutils import build_ext
-from setuptools import find_packages, setup,Extension
+from setuptools import find_packages, setup, Extension
 import numpy
 
 if __name__ == "__main__":
@@ -37,8 +37,13 @@ if __name__ == "__main__":
 
     setup(
         name="anomaly_detector",
-        packages=['anomaly_detector'],
-        package_dir={"anomaly_detector": "./anomaly-detector/anomaly_detector"},
+        packages=["anomaly_detector", "anomaly_detector.common", "anomaly_detector.multivariate", "anomaly_detector.univariate"],
+        package_dir={
+            "anomaly_detector": "./anomaly-detector/anomaly_detector",
+            "anomaly_detector.common": "./anomaly-detector/anomaly_detector/common",
+            "anomaly_detector.multivariate": "./anomaly-detector/anomaly_detector/multivariate",
+            "anomaly_detector.univariate": "./anomaly-detector/anomaly_detector/univariate",
+        },
         # package_data={"": ['*.txt']},
         ext_modules=cythonize(extensions),
         include_package_data=True,
@@ -57,6 +62,7 @@ if __name__ == "__main__":
         ],
         keywords=["machine learning", "time series", "anomaly detection"],
         include_dirs=[numpy.get_include()],
+        python_requires='>=3.11.0',
         install_requires=REQUIREMENTS,
         classifiers=[
             "Development Status :: 4 - Beta",

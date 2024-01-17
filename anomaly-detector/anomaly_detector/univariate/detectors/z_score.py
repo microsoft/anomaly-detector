@@ -1,8 +1,8 @@
-from univariate.detectors.detector import AnomalyDetector
+from anomaly_detector.univariate.detectors.detector import AnomalyDetector
 import numpy as np
 from statsmodels import robust
 
-from univariate.util import Direction
+from anomaly_detector.univariate.util import Direction
 
 
 class ZScoreDetector(AnomalyDetector):

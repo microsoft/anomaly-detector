@@ -1,8 +1,8 @@
 import numpy as np
-from univariate._anomaly_kernel_cython import max_gcv, gcv
+from anomaly_detector.univariate._anomaly_kernel_cython import max_gcv, gcv
 from seasonal import periodogram_peaks
 import statsmodels.api as sm
-from univariate.util import fit_trend, normalize, smooth_spikes, MIN_PERIOD
+from anomaly_detector.univariate.util import fit_trend, normalize, smooth_spikes, MIN_PERIOD
 
 
 class SpectrumDetector:

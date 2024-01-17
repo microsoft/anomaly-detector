@@ -1,6 +1,6 @@
-from univariate.detectors.detector import AnomalyDetector
-from univariate.util import Direction
-from univariate._anomaly_kernel_cython import dynamic_threshold
+from anomaly_detector.univariate.detectors.detector import AnomalyDetector
+from anomaly_detector.univariate.util import Direction
+from anomaly_detector.univariate._anomaly_kernel_cython import dynamic_threshold
 
 
 class DynamicThreshold(AnomalyDetector):

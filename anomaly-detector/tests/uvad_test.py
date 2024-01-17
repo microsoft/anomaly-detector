@@ -4,14 +4,11 @@ import json
 import unittest
 from enum import Enum
 import pandas as pd
-import sys
-sys.path.append(os.path.abspath("anomaly_detector"))
 from collections import Counter
-from univariate.util.enum import default_gran_window
-from univariate.util.fields import DetectType, IsAnomaly, ExpectedValue, Severity, IsPositiveAnomaly, IsNegativeAnomaly
-from univariate.univariate_anomaly_detection import UnivariateAnomalyDetector
-from univariate.util.fields import DetectType, IsAnomaly, ExpectedValue, Severity, IsPositiveAnomaly, IsNegativeAnomaly, Period
-
+from anomaly_detector.univariate.util.enum import default_gran_window
+from anomaly_detector.univariate.util.fields import DetectType, IsAnomaly, ExpectedValue, Severity, IsPositiveAnomaly, IsNegativeAnomaly
+from anomaly_detector.univariate.univariate_anomaly_detection import UnivariateAnomalyDetector
+from anomaly_detector.univariate.util.fields import DetectType, IsAnomaly, ExpectedValue, Severity, IsPositiveAnomaly, IsNegativeAnomaly, Period
 def call_entire(content):
     
     # input: DataFrame

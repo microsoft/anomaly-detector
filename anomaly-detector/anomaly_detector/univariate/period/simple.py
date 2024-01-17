@@ -1,7 +1,7 @@
 import numpy as np
 import math
-from univariate._anomaly_kernel_cython import gcv, median_filter, remove_anomaly_in_bucket
-from univariate.util import Granularity, normalize, smooth_spikes, MIN_PERIOD
+from anomaly_detector.univariate._anomaly_kernel_cython import gcv, median_filter, remove_anomaly_in_bucket
+from anomaly_detector.univariate.util import Granularity, normalize, smooth_spikes, MIN_PERIOD
 
 
 class SimpleDetector:

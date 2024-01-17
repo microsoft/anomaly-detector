@@ -1,6 +1,6 @@
-from univariate.detectors.detector import AnomalyDetector
-from univariate.util import Direction, get_critical, EPS
-from univariate._anomaly_kernel_cython import generalized_esd_test
+from anomaly_detector.univariate.detectors.detector import AnomalyDetector
+from anomaly_detector.univariate.util import Direction, get_critical, EPS
+from anomaly_detector.univariate._anomaly_kernel_cython import generalized_esd_test
 
 
 class ESD(AnomalyDetector):

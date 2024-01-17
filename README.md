@@ -19,6 +19,9 @@ cd anomaly-detector
 pip install -r requirements.txt
 python setup.py build_ext --inplace 
 ```
+build
+python setup.py sdist bdist_wheel  
+
 ## Using Docker (Optional)
 
 ```bash

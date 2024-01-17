@@ -1,6 +1,6 @@
 import bisect
 import numpy as np
-from univariate.util import EPS
+from anomaly_detector.univariate.util import EPS
 
 ANOMALY_IGNORE_RATIO = 0.0001
 MIN_UNIT = 0.3

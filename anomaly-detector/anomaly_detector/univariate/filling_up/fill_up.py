@@ -1,5 +1,5 @@
 from .fill_up_methods import *
-from univariate.util.fields import DEFAULT_MAXIMUM_FILLUP_LENGTH
+from anomaly_detector.univariate.util.fields import DEFAULT_MAXIMUM_FILLUP_LENGTH
 
 
 class FillingUpProcess:
