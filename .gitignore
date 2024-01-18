@@ -399,4 +399,7 @@ FodyWeavers.xsd
 
 mlruns/
 mlartifacts/
-# model/
+model/
+venv/
+
+.idea/
