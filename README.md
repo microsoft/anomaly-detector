@@ -1,3 +1,41 @@
+# Environment
+python = 3.11 
+
+R >= 4.0
+
+# Getting Started
+
+<!-- ## Clone the Repository -->
+
+```bash
+git clone https://github.com/microsoft/anomaly-detector.git
+cd anomaly-detector
+```
+
+<!-- ## Install -->
+
+
+```bash
+pip install -r requirements.txt
+python setup.py build_ext --inplace 
+```
+build
+python setup.py sdist bdist_wheel  
+
+## Using Docker (Optional)
+
+```bash
+docker build -t your_image_name -f .script/Dockerfile .
+```
+
+
+# Test
+
+```bash
+cd anomaly-detector
+python tests/uvad_test.py
+```
+
 # Project
 
 > This repo has been populated by an initial template to help get you started. Please
