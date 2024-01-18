@@ -1,17 +1,16 @@
 [tool.poetry]
 name = "anomaly-detector"
-version = "0.1.0"
-description = ""
-authors = ["juaduan <juanyong.duan@microsoft.com>"]
+version = "0.1.1"
+description = "Microsoft Anomaly Detector"
+authors = ["Anomaly Detector <anomaly_detector@microsoft.com>"]
+license = "MIT"
 readme = "README.md"
-packages = [{include = "anomaly_detector"}]
 
 [tool.poetry.dependencies]
-python = "^3.11"
-mlflow = "^2.9.2"
-torch = "^2.1.2"
+python = "^3.8"
+torch = "^1.13.1"
 tqdm = "^4.66.1"
-pybind11 = "^2.11.1"
+mlflow = "^2"
 pytest = "^7.4.4"
 
 
