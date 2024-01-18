@@ -1,7 +1,8 @@
 import os
 from pathlib import Path
 from Cython.Build import cythonize
-from Cython.Distutils import build_ext
+from setuptools.command.build_ext import build_ext
+from setuptools.command.sdist import sdist
 from setuptools import find_packages, setup, Extension
 import numpy
 
@@ -32,8 +33,20 @@ if __name__ == "__main__":
     Extension("anomaly_detector.univariate._anomaly_kernel_cython", ["anomaly-detector/anomaly_detector/univariate/_anomaly_kernel_cython.pyx"],
               define_macros=[('CYTHON_TRACE', '1')])
 ]
-    cmdclass = {'build_ext': build_ext}
-    cmdclass.update({'build_ext': build_ext})
+    # cmdclass = {'build_ext': build_ext}
+    # cmdclass.update({'build_ext': build_ext})
+
+    class CustomSdist(sdist):
+        def run(self):
+            # Run build_ext before sdist
+            self.run_command('build_ext')
+            build_ext_cmd = self.get_finalized_command('build_ext')
+            build_ext_cmd.inplace = 1
+
+            # Use the standard behavior of sdist from the base class
+            sdist.run(self)
+    
+    cmdclass = {'sdist': CustomSdist}
 
     setup(
         name="anomaly_detector",
