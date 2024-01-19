@@ -1,7 +1,7 @@
 name: publish_release
 on:
   push:
-    branches: [ "dev" ]
+    branches: [ "main" ]
 
 jobs:
   release:
@@ -38,8 +38,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./anomaly-detector/dist/*.whl
-          asset_name: *.whl
+          asset_path: ./anomaly-detector/dist/anomaly_detector-0.1.0-py3-none-any.whl
+          asset_name: anomaly_detector-0.1.0-py3-none-any.whl
           asset_content_type: application/whl
 
       - uses: eregon/publish-release@v1
