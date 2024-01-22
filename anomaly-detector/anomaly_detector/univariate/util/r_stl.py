@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import pandas
-import rpy2.robjects as robjects
 import numpy as npy
+from rstl import STL
 
 
 def stl_core(data, np=None):
@@ -25,22 +25,8 @@ def stl_core(data, np=None):
         If no value is given, then the period will be determined from the
         ``data`` timeseries.
     """
-    ts_ = robjects.r['ts']
-    stl_ = robjects.r['stl']
-
-    ts = ts_(robjects.FloatVector(data), frequency=np)
-
-    result = stl_(ts, "periodic", robust=True)
-
-    res_ts = npy.asarray(result[0])
-    try:
-        res_ts = pandas.DataFrame({"seasonal": res_ts[:, 0],
-                                   "trend": res_ts[:, 1],
-                                   "remainder": res_ts[:, 2]})
-    except Exception as e:
-        raise e
-
-    return res_ts
+    res_ts = STL(data, np, "periodic", robust=True)
+    return pandas.DataFrame({"seasonal": res_ts.seasonal,"trend": res_ts.trend, "remainder": res_ts.remainder})
 
 
 def stl_log(data, np=None):
@@ -61,16 +47,9 @@ def stl_log(data, np=None):
         data = npy.subtract(data, base)
         data = data + 1   # add 1 along in case value scale in _data is extreme compared with 1
 
-    ts_ = robjects.r['ts']
-    stl_ = robjects.r['stl']
-
-    ts = ts_(robjects.FloatVector(npy.log(data)), frequency=np)
-
-    result = stl_(ts, "periodic", robust=True)
-    result = npy.asarray(result[0])
-
-    trend_log = npy.asarray(result[:, 1])
-    seasonal_log = npy.asarray(result[:, 0])
+    result = STL(npy.log(data), np, "periodic", robust=True)
+    trend_log = result.trend
+    seasonal_log = result.seasonal
 
     trend = npy.exp(trend_log)
     seasonal = npy.exp(trend_log + seasonal_log) - trend
