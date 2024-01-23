@@ -35,25 +35,26 @@ jobs:
       #   run: pip install setuptools Cython==3.0.8 numpy==1.25.2
 
       - name: install dependence
-        working-directory: anomaly-detector
+        working-directory: ./
         run: |
           poetry lock --no-update
           poetry install
 
-      - name: show pkg list
-        run: poetry run pip list
+      - name: activate virtualenv
+        working-directory: ./
+        run: poetry shell
       
       - name: compile cython
         working-directory: ./
-        run: poetry run python setup.py build_ext --inplace
+        run: python setup.py build_ext --inplace
 
       
       - name: run the test script
         working-directory: anomaly-detector/tests
         run: |
           pip install pytest
-          poetry run python test_demo.py
-          poetry run python uvad_test.py
+          python test_demo.py
+          python uvad_test.py
 
       - name: Analyze code with pylint
         run: |
@@ -75,14 +76,18 @@ jobs:
       #   run: pip install setuptools Cython==3.0.8 numpy==1.25.2
 
       - name: install dependence
-        working-directory: anomaly-detector
+        working-directory: ./
         run: |
           poetry lock --no-update
           poetry install
 
+      - name: activate virtualenv
+        working-directory: ./
+        run: poetry shell
+
       - name: gen .whl file by setup.py
         working-directory: ./
-        run: poetry run python setup.py sdist bdist_wheel 
+        run: python setup.py sdist bdist_wheel 
 
       - name: install .whl file
         run: pip install dist/*.whl
@@ -91,8 +96,8 @@ jobs:
         working-directory: anomaly-detector/tests
         run: |
           pip install pytest
-          poetry run python test_demo.py
-          poetry run python uvad_test.py
+          python test_demo.py
+          python uvad_test.py
 
 
   # test_on_setup:
