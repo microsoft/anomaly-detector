@@ -31,8 +31,8 @@ jobs:
       - name: Install poetry
         run: pipx install poetry
 
-      - name: Install setuptools Cython numpy
-        run: pip install setuptools Cython==3.0.8 numpy==1.25.2
+      # - name: Install setuptools Cython numpy
+      #   run: pip install setuptools Cython==3.0.8 numpy==1.25.2
 
       - name: install dependence
         working-directory: anomaly-detector
