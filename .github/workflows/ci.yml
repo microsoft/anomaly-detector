@@ -36,7 +36,10 @@ jobs:
         run: poetry install
 
       - name: gen .whl file
-        run:
+        run: |
+          pip install Cython
+          pip install numpy 
+          python setup.py sdist bdist_wheel
 
       - name: run the test script
         working-directory: anomaly-detector/tests
