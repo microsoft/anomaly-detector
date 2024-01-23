@@ -9,12 +9,14 @@ import numpy
 if __name__ == "__main__":
     import os
 
+
     def package_files(directory):
         paths = []
         for path, _, filenames in os.walk(directory):
             for filename in filenames:
                 paths.append(os.path.join("..", path, filename))
         return paths
+
 
     # extra_files = package_files("front/build")
 
@@ -26,6 +28,7 @@ if __name__ == "__main__":
                 for s in f.readlines()
                 if (s.strip() and not s.startswith("#"))
             ]
+
 
     REQUIREMENTS = _read_reqs("requirements.txt")
 
@@ -57,7 +60,6 @@ if __name__ == "__main__":
             "anomaly_detector.multivariate": "./anomaly-detector/anomaly_detector/multivariate",
             "anomaly_detector.univariate": "./anomaly-detector/anomaly_detector/univariate",
         },
-        # package_data={"": ['*.txt']},
         ext_modules=cythonize(extensions),
         include_package_data=True,
         cmdclass=cmdclass,
@@ -68,14 +70,14 @@ if __name__ == "__main__":
         # long_description_content_type="text/markdown",
         # entry_points={"console_scripts": [""]},
         author="test",
-        author_email="juaduan@microsoft.com",
-        url="https://github.com/juaduan/anomaly-detector",
+        author_email="anomaly_detector@microsoft.com",
+        url="https://github.com/microsoft/anomaly-detector",
         data_files=[
             (".", ["README.md"]),
         ],
         keywords=["machine learning", "time series", "anomaly detection"],
         include_dirs=[numpy.get_include()],
-        python_requires='>=3.11.0',
+        python_requires='>=3.8.0',
         install_requires=REQUIREMENTS,
         classifiers=[
             "Development Status :: 4 - Beta",
