@@ -15,10 +15,10 @@ jobs:
           python-version: 3.11
 
       - name: Build project
-        working-directory: anomaly-detector
         run: |
-          pipx install poetry
-          poetry build
+          pip install Cython
+          pip install numpy 
+          python setup.py sdist bdist_wheel
 
       - name: Create Draft Release
         id: create_release
@@ -38,8 +38,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./anomaly-detector/dist/anomaly_detector-0.1.0-py3-none-any.whl
-          asset_name: anomaly_detector-0.1.0-py3-none-any.whl
+          asset_path: ./dist/anomaly_detector-0.1.0-cp39-cp39-win_amd64.whl
+          asset_name: anomaly_detector-0.1.0-cp39-cp39-win_amd64.whl
           asset_content_type: application/whl
 
       - uses: eregon/publish-release@v1
