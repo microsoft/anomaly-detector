@@ -1,4 +1,4 @@
-from .util import fit_trend
+from anomaly_detector.univariate.util import fit_trend
 from .util import get_period_pattern
 from .model.detect_model import AnomalyDetectionModel
 from .resource.error_message import InvalidJsonFormat, CustomSupportRequired
