@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.9']
+        python-version: ['3.9', '3.10.8', '3.11', '3.12']
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -41,7 +41,7 @@ jobs:
           pip install numpy 
           python setup.py sdist bdist_wheel
       - name: copy .pyd file
-        run: cp ./build/lib.win-amd64-cpython-39/anomaly_detector/univariate/_anomaly_kernel_cython.cp39-win_amd64.pyd ./anomaly-detector/anomaly_detector/univariate/_anomaly_kernel_cython.pyd
+        run: cp ./build/lib.win-amd64-cpython-39/anomaly_detector/univariate/*.pyd ./anomaly-detector/anomaly_detector/univariate/_anomaly_kernel_cython.pyd
 
       - name: run the test script
         working-directory: anomaly-detector/tests
