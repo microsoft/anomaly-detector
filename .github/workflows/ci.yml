@@ -33,7 +33,9 @@ jobs:
 
       - name: install dependence
         working-directory: anomaly-detector
-        run: poetry install
+        run: |
+          poetry lock --no-update
+          poetry install
 
       - name: compile cython
         working-directory: anomaly-detector/anomaly_detector
