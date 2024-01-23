@@ -40,21 +40,17 @@ jobs:
           poetry lock --no-update
           poetry install
 
-      - name: activate virtualenv
-        working-directory: ./
-        run: poetry shell
-      
       - name: compile cython
         working-directory: ./
-        run: python setup.py build_ext --inplace
+        run: poetry run python setup.py build_ext --inplace
 
       
       - name: run the test script
-        working-directory: anomaly-detector/tests
+        working-directory: ./
         run: |
           pip install pytest
-          python test_demo.py
-          python uvad_test.py
+          poetry run python anomaly-detector/tests/test_demo.py
+          poetry run python anomaly-detector/tests/test_uvad.py
 
       - name: Analyze code with pylint
         run: |
@@ -81,23 +77,19 @@ jobs:
           poetry lock --no-update
           poetry install
 
-      - name: activate virtualenv
-        working-directory: ./
-        run: poetry shell
-
       - name: gen .whl file by setup.py
         working-directory: ./
-        run: python setup.py sdist bdist_wheel 
+        run: poetry run python setup.py sdist bdist_wheel 
 
       - name: install .whl file
-        run: pip install dist/*.whl
+        run: poetry run pip install dist/*.whl
 
       - name: run the test script
-        working-directory: anomaly-detector/tests
+        working-directory: ./
         run: |
           pip install pytest
-          python test_demo.py
-          python uvad_test.py
+          poetry run python anomaly-detector/tests/test_demo.py
+          poetry run python anomaly-detector/tests/test_uvad.py
 
 
   # test_on_setup:
