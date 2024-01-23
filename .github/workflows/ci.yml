@@ -57,6 +57,7 @@ jobs:
 
       - name: compile .pyd file
         run: |
+          pip install Cython
           python setup.py sdist bdist_wheel
           cp build/lib.win-amd64-cpython-39/
 
