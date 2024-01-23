@@ -76,7 +76,7 @@ jobs:
 
       - name: install package by setup.py
         run: |
-          pip install CPython
+          pip install Cython
           pip install .
 
       - name: run the test script
