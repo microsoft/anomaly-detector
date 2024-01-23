@@ -1,12 +1,14 @@
 import os
 import pandas as pd
 import numpy as np
+
+from anomaly_detector.univariate.model.detect_model import AnomalyDetectionModel
 from anomaly_detector.univariate.resource.error_message import *
 from anomaly_detector.univariate.util import Granularity, get_indices_from_timestamps, DEFAULT_FILL_UP_MODE, FillUpMode, BoundaryVersion
 from anomaly_detector.univariate.util.enum import default_gran_window
 from anomaly_detector.common.exception import AnomalyDetectionRequestError
 
-from anomaly_detector.univariate import AnomalyDetectionModel
+# from anomaly_detector.univariate import AnomalyDetectionModel
 from anomaly_detector.univariate.util.fields import DEFAULT_PERIOD, DEFAULT_GRANULARITY_NONE,DEFAULT_MARGIN_FACTOR, DEFAULT_FILL_UP_MODE, FillUpMode, BoundaryVersion, VALUE_LOWER_BOUND, VALUE_UPPER_BOUND, DetectType, ExpectedValue, UpperMargin, LowerMargin, IsNegativeAnomaly, IsPositiveAnomaly, IsAnomaly, Period, SuggestedWindow
 from anomaly_detector.univariate.util import BoundaryVersion
 from anomaly_detector.univariate.util.refine import get_margins
