@@ -42,14 +42,14 @@ if __name__ == "__main__":
     class CustomSdist(sdist):
         def run(self):
             # Run build_ext before sdist
-            self.run_command('build_ext')
             build_ext_cmd = self.get_finalized_command('build_ext')
             build_ext_cmd.inplace = 1
+            self.run_command('build_ext')
 
             # Use the standard behavior of sdist from the base class
             sdist.run(self)
     
-    cmdclass = {'sdist': CustomSdist}
+    cmdclass = {'sdist': CustomSdist, 'build_ext': build_ext}
 
     setup(
         name="anomaly_detector",

@@ -35,6 +35,10 @@ jobs:
         working-directory: anomaly-detector
         run: poetry install
 
+      - name: compile cython
+        working-directory: anomaly-detector/anomaly_detector
+        run: python setup.py build_ext --inplace
+
       - name: run the test script
         working-directory: anomaly-detector/tests
         run: poetry run pytest -k "test_"
@@ -44,7 +48,7 @@ jobs:
           pip install pylint
           pylint --exit-zero $(git ls-files '*.py')
 
-  test_on_poetry_whl:
+  test_on_setup_whl:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -52,12 +56,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install poetry
-        run: pipx install poetry
+      - name: Install setuptools Cython numpy
+        run: pipx install setuptools Cython==3.0.8 numpy==1.25.2
 
-      - name: gen .whl file by poetry
+      - name: gen .whl file by setup.py
         working-directory: anomaly-detector
-        run: poetry build
+        run: python setup.py sdist bdist_wheel 
 
       - name: install .whl file
         run: pip install ./anomaly-detector/dist/*.whl
@@ -67,18 +71,19 @@ jobs:
         run: |
           pip install pytest
           python test_demo.py
+          python uvad_test.py
 
 
-  test_on_setup:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+  # test_on_setup:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
 
-      - name: install package by setup.py
-        run: pip install .
+  #     - name: install package by setup.py
+  #       run: pip install .
 
-      - name: run the test script
-        working-directory: anomaly-detector/tests
-        run: |
-          pip install pytest
-          python test_demo.py
+  #     - name: run the test script
+  #       working-directory: anomaly-detector/tests
+  #       run: |
+  #         pip install pytest
+  #         python test_demo.py
