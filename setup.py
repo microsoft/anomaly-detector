@@ -51,7 +51,8 @@ if __name__ == "__main__":
 
             # Use the standard behavior of sdist from the base class
             sdist.run(self)
-    
+
+
     cmdclass = {'sdist': CustomSdist}
 
     setup(
@@ -63,6 +64,7 @@ if __name__ == "__main__":
             "anomaly_detector.common": "./anomaly-detector/anomaly_detector/common",
             "anomaly_detector.multivariate": "./anomaly-detector/anomaly_detector/multivariate",
             "anomaly_detector.univariate": "./anomaly-detector/anomaly_detector/univariate",
+            "anomaly_detector.univariate.model": "./anomaly-detector/anomaly_detector/univariate/model",
         },
         ext_modules=cythonize(extensions),
         include_package_data=True,
