@@ -2,6 +2,7 @@ import os
 import os
 import numpy as np
 from distutils.errors import CCompilerError, DistutilsExecError, DistutilsPlatformError
+
 # See if Cython is installed
 try:
     from Cython.Build import cythonize
@@ -16,15 +17,18 @@ else:
     from setuptools.dist import Distribution
     from setuptools.command.build_ext import build_ext
 # use cythonize to build the extensions
-modules = ["anomaly_detector/univariate/*.pyx"]
+modules = ["./anomaly_detector/univariate/*.pyx"]
 extensions = cythonize(modules,
                        language_level=3,
-                        compiler_directives={'linetrace': True},
+                       compiler_directives={'linetrace': True},
                        )
+
 
 # cmdclass = {'build_ext': build_ext}
 class BuildFailed(Exception):
     pass
+
+
 class ExtBuilder(build_ext):
 
     def run(self):
@@ -39,15 +43,17 @@ class ExtBuilder(build_ext):
         except (CCompilerError, DistutilsExecError, DistutilsPlatformError, ValueError):
             raise BuildFailed('Could not compile C extension.')
 
+
 cmdclass = {"build_ext": ExtBuilder}
+
 
 def build(setup_kwargs):
     """Needed for the poetry building interface."""
-    
+
     os.environ['CFLAGS'] = '-O3'
-    
+
     setup_kwargs.update({
-        'ext_modules' : extensions,
-        'include_dirs' : [np.get_include()],
+        'ext_modules': extensions,
+        'include_dirs': [np.get_include()],
         'cmdclass': cmdclass
     })

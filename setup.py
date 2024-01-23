@@ -33,9 +33,12 @@ if __name__ == "__main__":
     REQUIREMENTS = _read_reqs("requirements.txt")
 
     extensions = [
-    Extension("anomaly_detector.univariate._anomaly_kernel_cython", ["anomaly-detector/anomaly_detector/univariate/_anomaly_kernel_cython.pyx"],
-              define_macros=[('CYTHON_TRACE', '1')])
-]
+        Extension("anomaly_detector.univariate._anomaly_kernel_cython",
+                  ["anomaly-detector/anomaly_detector/univariate/_anomaly_kernel_cython.pyx"],
+                  define_macros=[('CYTHON_TRACE', '1')])
+    ]
+
+
     # cmdclass = {'build_ext': build_ext}
     # cmdclass.update({'build_ext': build_ext})
 
@@ -53,7 +56,8 @@ if __name__ == "__main__":
 
     setup(
         name="anomaly_detector",
-        packages=["anomaly_detector", "anomaly_detector.common", "anomaly_detector.multivariate", "anomaly_detector.univariate"],
+        packages=["anomaly_detector", "anomaly_detector.common", "anomaly_detector.multivariate",
+                  "anomaly_detector.univariate"],
         package_dir={
             "anomaly_detector": "./anomaly-detector/anomaly_detector",
             "anomaly_detector.common": "./anomaly-detector/anomaly_detector/common",
@@ -77,7 +81,7 @@ if __name__ == "__main__":
         ],
         keywords=["machine learning", "time series", "anomaly detection"],
         include_dirs=[numpy.get_include()],
-        python_requires='>=3.8.0',
+        python_requires='>=3.9.0',
         install_requires=REQUIREMENTS,
         classifiers=[
             "Development Status :: 4 - Beta",
