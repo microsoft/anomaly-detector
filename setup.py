@@ -33,9 +33,12 @@ if __name__ == "__main__":
     REQUIREMENTS = _read_reqs("requirements.txt")
 
     extensions = [
-    Extension("anomaly_detector.univariate._anomaly_kernel_cython", ["anomaly-detector/anomaly_detector/univariate/_anomaly_kernel_cython.pyx"],
-              define_macros=[('CYTHON_TRACE', '1')])
-]
+        Extension("anomaly_detector.univariate._anomaly_kernel_cython",
+                  ["anomaly-detector/anomaly_detector/univariate/_anomaly_kernel_cython.pyx"],
+                  define_macros=[('CYTHON_TRACE', '1')])
+    ]
+
+
     # cmdclass = {'build_ext': build_ext}
     # cmdclass.update({'build_ext': build_ext})
 
@@ -48,17 +51,20 @@ if __name__ == "__main__":
 
             # Use the standard behavior of sdist from the base class
             sdist.run(self)
-    
+
+
     cmdclass = {'sdist': CustomSdist}
 
     setup(
         name="anomaly_detector",
-        packages=["anomaly_detector", "anomaly_detector.common", "anomaly_detector.multivariate", "anomaly_detector.univariate"],
+        packages=["anomaly_detector", "anomaly_detector.common", "anomaly_detector.multivariate",
+                  "anomaly_detector.univariate"],
         package_dir={
             "anomaly_detector": "./anomaly-detector/anomaly_detector",
             "anomaly_detector.common": "./anomaly-detector/anomaly_detector/common",
             "anomaly_detector.multivariate": "./anomaly-detector/anomaly_detector/multivariate",
             "anomaly_detector.univariate": "./anomaly-detector/anomaly_detector/univariate",
+            "anomaly_detector.univariate.util": "./anomaly-detector/anomaly_detector/univariate/util",
         },
         ext_modules=cythonize(extensions),
         include_package_data=True,
