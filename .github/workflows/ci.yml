@@ -31,6 +31,9 @@ jobs:
       - name: Install poetry
         run: pipx install poetry
 
+      - name: Install setuptools Cython numpy
+        run: pipx install setuptools Cython==3.0.8 numpy==1.25.2
+
       - name: install dependence
         working-directory: anomaly-detector
         run: |
@@ -38,12 +41,15 @@ jobs:
           poetry install
 
       - name: compile cython
-        working-directory: anomaly-detector/anomaly_detector
+        working-directory: ./
         run: python setup.py build_ext --inplace
 
       - name: run the test script
         working-directory: anomaly-detector/tests
-        run: poetry run pytest -k "test_"
+        run: |
+          pip install pytest
+          python test_demo.py
+          python uvad_test.py
 
       - name: Analyze code with pylint
         run: |
