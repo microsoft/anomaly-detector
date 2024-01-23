@@ -64,7 +64,7 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
         train_length = int(len(data) * self.config.train_ratio)
         valid_length = int(len(data) * self.config.val_ratio)
         train_data = values[:train_length]
-        val_data = values[train_length : valid_length + train_length]
+        val_data = values[train_length: valid_length + train_length]
         max_values = np.max(train_data, axis=0)
         min_values = np.min(train_data, axis=0)
         self.config.normalize_base = NormalizeBase(
@@ -216,7 +216,7 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
         return loss_meter.avg, vae_loss_meter.avg, pred_loss_meter.avg
 
     def predict(
-        self, context, data: pd.DataFrame, params: Optional[Dict[str, Any]] = None
+            self, context, data: pd.DataFrame, params: Optional[Dict[str, Any]] = None
     ):
         effective_timestamps, variables, values, _ = self._verify_data_and_params(
             data, params
@@ -249,16 +249,16 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
         thresholds = [
             get_threshold(
                 inference_scores[
-                    max(0, result_n - self.config.threshold_window - i) : len(
-                        inference_scores
-                    )
-                    - i
+                max(0, result_n - self.config.threshold_window - i): len(
+                    inference_scores
+                )
+                                                                     - i
                 ]
             )
             for i in range(result_n - 1, self.config.threshold_window - 2, -1)
         ]
-        inference_scores = inference_scores[self.config.threshold_window - 1 :]
-        contributor_scores = contributor_scores[self.config.threshold_window - 1 :]
+        inference_scores = inference_scores[self.config.threshold_window - 1:]
+        contributor_scores = contributor_scores[self.config.threshold_window - 1:]
         is_anomalies = np.array(
             [
                 (s >= t and s >= hard_th_lower) or s > hard_th_upper
@@ -281,7 +281,7 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
                 -1
             )
             attn_feats = (
-                attn_feats[-inference_length:] - previous_attn[-inference_length:]
+                    attn_feats[-inference_length:] - previous_attn[-inference_length:]
             )
         attn_feats = attn_feats.numpy()
         return self._pack_response(
@@ -331,26 +331,26 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
                     _,
                 ) = detection_results.get_loss_items()
                 batch_contributor_rmses = (
-                    torch.exp(
-                        torch.min(
-                            2 * torch.abs(x_pred - target), torch.ones_like(x_pred)
+                        torch.exp(
+                            torch.min(
+                                2 * torch.abs(x_pred - target), torch.ones_like(x_pred)
+                            )
                         )
-                    )
-                    - 1
+                        - 1
                 )
 
                 batch_contributor_probs = (
-                    torch.exp(
-                        torch.min(
-                            2 * torch.abs(x_recon - target), torch.ones_like(x_pred)
+                        torch.exp(
+                            torch.min(
+                                2 * torch.abs(x_recon - target), torch.ones_like(x_pred)
+                            )
                         )
-                    )
-                    - 1
+                        - 1
                 )
                 batch_probs = torch.mean(batch_contributor_probs, dim=1)
 
                 batch_contributor_rmses_weight = (
-                    batch_contributor_rmses.cpu().numpy() * pct_weight
+                        batch_contributor_rmses.cpu().numpy() * pct_weight
                 )
                 contributor_rmses = append_result(
                     contributor_rmses, batch_contributor_rmses_weight
@@ -438,14 +438,14 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
         return effective_timestamps, variables, values, config
 
     def _pack_response(
-        self,
-        timestamps,
-        variables,
-        is_anomalies,
-        inference_scores,
-        severity_scores,
-        contributor_scores,
-        attn_feats,
+            self,
+            timestamps,
+            variables,
+            is_anomalies,
+            inference_scores,
+            severity_scores,
+            contributor_scores,
+            attn_feats,
     ):
         contributor_scores = torch.from_numpy(contributor_scores)
         top_k_contributors_idx = torch.argsort(
@@ -499,7 +499,7 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
                         changed_variables = []
                         for k in range(num_attentions):
                             if abs(top_attn_scores[idx, j, k]) > min(
-                                0.001, 1.0 / (1.25 * num_series_names)
+                                    0.001, 1.0 / (1.25 * num_series_names)
                             ):
                                 changed_values.append(top_attn_scores[idx, j, k])
                                 var_idx = top_attn_scores_idx[idx, j, k]
