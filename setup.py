@@ -10,6 +10,16 @@ if __name__ == "__main__":
     import os
 
 
+    def get_all_package_and_dir(directory):
+        all_package = {}
+        for path, _, filenames in os.walk(directory):
+            if "__init__.py" in filenames and "test" not in path:
+                path = "/".join(path.split("\\"))
+                package_name = ".".join(path.split("/"))[2::]
+                all_package[package_name] = path
+        return all_package
+
+
     def package_files(directory):
         paths = []
         for path, _, filenames in os.walk(directory):
@@ -55,18 +65,11 @@ if __name__ == "__main__":
 
     cmdclass = {'sdist': CustomSdist}
 
+    all_package = get_all_package_and_dir("./anomaly_detector")
     setup(
         name="anomaly_detector",
-        packages=["anomaly_detector", "anomaly_detector.common", "anomaly_detector.multivariate",
-                  "anomaly_detector.univariate", "anomaly_detector.univariate.util","anomaly_detector.univariate.model"],
-        package_dir={
-            "anomaly_detector": "./anomaly-detector/anomaly_detector",
-            "anomaly_detector.common": "./anomaly-detector/anomaly_detector/common",
-            "anomaly_detector.multivariate": "./anomaly-detector/anomaly_detector/multivariate",
-            "anomaly_detector.univariate": "./anomaly-detector/anomaly_detector/univariate",
-            "anomaly_detector.univariate.util": "./anomaly-detector/anomaly_detector/univariate/util",
-            "anomaly_detector.univariate.model": "./anomaly-detector/anomaly_detector/univariate/model",
-        },
+        packages=list(all_package.keys()),
+        package_dir=all_package,
         ext_modules=cythonize(extensions),
         include_package_data=True,
         cmdclass=cmdclass,
