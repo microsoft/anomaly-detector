@@ -3,7 +3,7 @@ import pytest
 import pandas as pd
 import yaml
 
-from anomaly_detector import MultivariateAnomalyDetector
+from anomaly_detector.multivariate.model import MultivariateAnomalyDetector
 from anomaly_detector.common.exception import DataFormatError, InvalidParameterError
 
 TEST_FILE_ROOT = "testCase/testCase_10000_20/"
