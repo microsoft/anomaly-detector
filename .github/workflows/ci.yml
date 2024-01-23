@@ -6,7 +6,7 @@ name: CI
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: [ "main", "dev"]
+    branches: [ "main", "dev" ]
   pull_request:
     branches: [ "main", "dev" ]
 
@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.9', '3.10.8', '3.11', '3.12']
+        python-version: [ '3.9', '3.10.8', '3.11', '3.12' ]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -41,11 +41,13 @@ jobs:
           pip install numpy 
           python setup.py sdist bdist_wheel
       - name: copy .pyd file
-        run: cp './build/lib.win-amd64-cpython-39/anomaly_detector/univariate/*.pyd' './anomaly-detector/anomaly_detector/univariate/_anomaly_kernel_cython.pyd'
+        run: cp ./build/lib.win-amd64-cpython-39/anomaly_detector/univariate/*.pyd ./anomaly-detector/anomaly_detector/univariate/_anomaly_kernel_cython.pyd
 
       - name: run the test script
         working-directory: anomaly-detector/tests
-        run: poetry run pytest -k "test_"
+        run: |
+          python test_demo.py
+          python uvad_test.py
 
       - name: Analyze code with pylint
         run: |
@@ -56,7 +58,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.9', '3.10.8', '3.11', '3.12' ]
+        python-version: [ '3.9', '3.10.8', '3.11', '3.12' ]
     steps:
       - uses: actions/checkout@v4
 
@@ -74,7 +76,7 @@ jobs:
         run: |
           pip install pytest
           python test_demo.py
-
+          python uvad_test.py
 
   test_on_setup:
     runs-on: ubuntu-latest
@@ -92,3 +94,4 @@ jobs:
         run: |
           pip install pytest
           python test_demo.py
+          python uvad_test.py
