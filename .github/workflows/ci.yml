@@ -41,19 +41,19 @@ jobs:
           poetry install
 
       - name: show pkg list
-        run: pip list
+        run: poetry run pip list
       
       - name: compile cython
         working-directory: ./
-        run: python setup.py build_ext --inplace
+        run: poetry run python setup.py build_ext --inplace
 
       
       - name: run the test script
         working-directory: anomaly-detector/tests
         run: |
           pip install pytest
-          python test_demo.py
-          python uvad_test.py
+          poetry run python test_demo.py
+          poetry run python uvad_test.py
 
       - name: Analyze code with pylint
         run: |
@@ -82,7 +82,7 @@ jobs:
 
       - name: gen .whl file by setup.py
         working-directory: ./
-        run: python setup.py sdist bdist_wheel 
+        run: poetry run python setup.py sdist bdist_wheel 
 
       - name: install .whl file
         run: pip install dist/*.whl
@@ -91,8 +91,8 @@ jobs:
         working-directory: anomaly-detector/tests
         run: |
           pip install pytest
-          python test_demo.py
-          python uvad_test.py
+          poetry run python test_demo.py
+          poetry run python uvad_test.py
 
 
   # test_on_setup:
