@@ -65,7 +65,7 @@ if __name__ == "__main__":
 
     cmdclass = {'sdist': CustomSdist}
 
-    all_package = get_all_package_and_dir("./anomaly_detector")
+    all_package = get_all_package_and_dir("./anomaly-detector")
     setup(
         name="anomaly_detector",
         packages=list(all_package.keys()),
