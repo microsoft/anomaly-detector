@@ -35,6 +35,9 @@ jobs:
         working-directory: anomaly-detector
         run: poetry install
 
+      - name: gen .whl file
+        run:
+
       - name: run the test script
         working-directory: anomaly-detector/tests
         run: poetry run pytest -k "test_"
@@ -53,7 +56,10 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: gen .whl file by setup
-        run: python setup.py sdist bdist_wheel
+        run: |
+          pip install Cython
+          pip install numpy
+          python setup.py sdist bdist_wheel
 
       - name: install .whl file
         run: pip install ./dist/*.whl
