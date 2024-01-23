@@ -15,7 +15,7 @@ if __name__ == "__main__":
         for path, _, filenames in os.walk(directory):
             if "__init__.py" in filenames and "test" not in path:
                 path = "/".join(path.split("\\"))
-                package_name = ".".join(path.split("/"))[2::]
+                package_name = ".".join(path.split("/")[2::])
                 all_package[package_name] = path
         return all_package
 
