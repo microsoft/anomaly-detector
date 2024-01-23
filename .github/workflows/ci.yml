@@ -75,7 +75,9 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: install package by setup.py
-        run: pip install .
+        run: |
+          pip install CPython
+          pip install .
 
       - name: run the test script
         working-directory: anomaly-detector/tests
