@@ -40,10 +40,14 @@ jobs:
           poetry lock --no-update
           poetry install
 
+      - name: show pkg list
+        run: pip list
+      
       - name: compile cython
         working-directory: ./
         run: python setup.py build_ext --inplace
 
+      
       - name: run the test script
         working-directory: anomaly-detector/tests
         run: |
@@ -64,15 +68,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install setuptools Cython numpy
-        run: pip install setuptools Cython==3.0.8 numpy==1.25.2
+      - name: Install poetry
+        run: pipx install poetry
+
+      # - name: Install setuptools Cython numpy
+      #   run: pip install setuptools Cython==3.0.8 numpy==1.25.2
+
+      - name: install dependence
+        working-directory: anomaly-detector
+        run: |
+          poetry lock --no-update
+          poetry install
 
       - name: gen .whl file by setup.py
-        working-directory: anomaly-detector
+        working-directory: ./
         run: python setup.py sdist bdist_wheel 
 
       - name: install .whl file
-        run: pip install ./anomaly-detector/dist/*.whl
+        run: pip install dist/*.whl
 
       - name: run the test script
         working-directory: anomaly-detector/tests
