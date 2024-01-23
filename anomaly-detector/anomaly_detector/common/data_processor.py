@@ -12,7 +12,7 @@ class MultiADDataProcessor:
         *,
         fill_na_method: str = FillNAMethod.Linear.name,
         fill_na_value: float = 0.0,
-        window: int | float | str,
+        window: Union[int, float, str],
         start_time: str = None,
         end_time: str = None,
     ):
