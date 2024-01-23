@@ -58,8 +58,9 @@ jobs:
       - name: compile .pyd file
         run: |
           pip install Cython
+          pip install numpy
           python setup.py sdist bdist_wheel
-          cp build/lib.win-amd64-cpython-39/
+#          cp build/lib.win-amd64-cpython-39/
 
       - name: gen .whl file by poetry
         working-directory: anomaly-detector
