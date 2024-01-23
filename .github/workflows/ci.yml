@@ -55,6 +55,11 @@ jobs:
       - name: Install poetry
         run: pipx install poetry
 
+      - name: compile .pyd file
+        run: |
+          python setup.py sdist bdist_wheel
+          cp build/lib.win-amd64-cpython-39/
+
       - name: gen .whl file by poetry
         working-directory: anomaly-detector
         run: poetry build
@@ -77,6 +82,7 @@ jobs:
       - name: install package by setup.py
         run: |
           pip install Cython
+          pip install numpy
           pip install .
 
       - name: run the test script
