@@ -16,7 +16,7 @@ else:
     from setuptools.dist import Distribution
     from setuptools.command.build_ext import build_ext
 # use cythonize to build the extensions
-modules = ["anomaly_detector/univariate/*.pyx"]
+modules = ["anomaly-detector/anomaly_detector/univariate/*.pyx"]
 extensions = cythonize(modules,
                        language_level=3,
                         compiler_directives={'linetrace': True},
