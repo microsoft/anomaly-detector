@@ -40,18 +40,13 @@ jobs:
           pip install Cython
           pip install numpy
           python setup.py build_ext --inplace
-#               python setup.py sdist bdist_wheel
-
-#      - name: copy .pyd file
-#        run: find ./build -name "*.pyd" -exec cp -t  ./anomaly-detector/anomaly_detector/univariate {} +
 
       - name: run the test script
         working-directory: anomaly-detector/tests
         run: |
           pip install pytest
           poetry run pytest test_demo.py
-#          python test_demo.py
-#          python uvad_test.py
+
 
       - name: Analyze code with pylint
         run: |
