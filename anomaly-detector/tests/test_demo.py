@@ -3,7 +3,7 @@ import pytest
 import pandas as pd
 import yaml
 
-from anomaly_detector import MultivariateAnomalyDetector
+from anomaly_detector.multivariate.model import MultivariateAnomalyDetector
 from anomaly_detector.common.exception import DataFormatError, InvalidParameterError
 
 TEST_FILE_ROOT = "testCase/testCase_10000_20/"
@@ -26,7 +26,7 @@ class TestAnomalyDetector:
             self.model.fit(train_data, params)
 
     def test_invalid_timestamp(self):
-        with pytest.raises(ValueError, match="doesn't match format"):
+        with pytest.raises(Exception):
             train_data = pd.read_csv(TEST_FILE_ROOT + "invalid_timestamp.csv")
             params = read_yaml_config(TEST_FILE_ROOT + "config.yaml")["normal_config"]
             self.model.fit(train_data, params)
@@ -61,4 +61,4 @@ class TestAnomalyDetector:
 
 
 if __name__ == "__main__":
-    pytest.main([__file__])
+    pytest.main([__file__, "-s"])

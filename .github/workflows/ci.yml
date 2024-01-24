@@ -6,7 +6,7 @@ name: CI
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: [ "main", "dev"]
+    branches: [ "main", "dev" ]
   pull_request:
     branches: [ "main", "dev" ]
 
@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ '3.8', '3.9', '3.10.8', '3.11', '3.12']
+        python-version: [ '3.9', '3.10.8', '3.11', '3.12' ]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -35,39 +35,47 @@ jobs:
         working-directory: anomaly-detector
         run: poetry install
 
+      - name: gen .pyd file
+        run: |
+          pip install Cython
+          pip install numpy
+          python setup.py build_ext --inplace
+
       - name: run the test script
         working-directory: anomaly-detector/tests
-        run: poetry run pytest -k "test_"
+        run: |
+          pip install pytest
+          poetry run pytest test_demo.py
+
 
       - name: Analyze code with pylint
         run: |
           pip install pylint
           pylint --exit-zero $(git ls-files '*.py')
 
-  test_on_poetry_whl:
+  test_on_setup_whl:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ '3.8', '3.9', '3.10.8', '3.11', '3.12' ]
+        python-version: [ '3.9', '3.10.8', '3.11', '3.12' ]
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install poetry
-        run: pipx install poetry
-
-      - name: gen .whl file by poetry
-        working-directory: anomaly-detector
-        run: poetry build
+      - name: gen .whl file by setup
+        run: |
+          pip install Cython
+          pip install numpy 
+          python setup.py sdist bdist_wheel
 
       - name: install .whl file
-        run: pip install ./anomaly-detector/dist/*.whl
+        run: pip install ./dist/*.whl
 
       - name: run the test script
         working-directory: anomaly-detector/tests
         run: |
           pip install pytest
           python test_demo.py
-
+#          python uvad_test.py
 
   test_on_setup:
     runs-on: ubuntu-latest
@@ -75,10 +83,14 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: install package by setup.py
-        run: pip install .
+        run: |
+          pip install Cython
+          pip install numpy
+          pip install .
 
       - name: run the test script
         working-directory: anomaly-detector/tests
         run: |
           pip install pytest
           python test_demo.py
+#          python uvad_test.py

@@ -10,6 +10,16 @@ if __name__ == "__main__":
     import os
 
 
+    def get_all_package_and_dir(directory):
+        all_package = {}
+        for path, _, filenames in os.walk(directory):
+            if "__init__.py" in filenames and "test" not in path:
+                path = "/".join(path.split("\\"))
+                package_name = ".".join(path.split("/")[2::])
+                all_package[package_name] = path
+        return all_package
+
+
     def package_files(directory):
         paths = []
         for path, _, filenames in os.walk(directory):
@@ -33,9 +43,12 @@ if __name__ == "__main__":
     REQUIREMENTS = _read_reqs("requirements.txt")
 
     extensions = [
-    Extension("anomaly_detector.univariate._anomaly_kernel_cython", ["anomaly-detector/anomaly_detector/univariate/_anomaly_kernel_cython.pyx"],
-              define_macros=[('CYTHON_TRACE', '1')])
-]
+        Extension("anomaly_detector.univariate._anomaly_kernel_cython",
+                  ["anomaly-detector/anomaly_detector/univariate/_anomaly_kernel_cython.pyx"],
+                  define_macros=[('CYTHON_TRACE', '1')])
+    ]
+
+
     # cmdclass = {'build_ext': build_ext}
     # cmdclass.update({'build_ext': build_ext})
 
@@ -48,18 +61,15 @@ if __name__ == "__main__":
 
             # Use the standard behavior of sdist from the base class
             sdist.run(self)
-    
+
+
     cmdclass = {'sdist': CustomSdist}
 
+    all_package = get_all_package_and_dir("./anomaly-detector")
     setup(
         name="anomaly_detector",
-        packages=["anomaly_detector", "anomaly_detector.common", "anomaly_detector.multivariate", "anomaly_detector.univariate"],
-        package_dir={
-            "anomaly_detector": "./anomaly-detector/anomaly_detector",
-            "anomaly_detector.common": "./anomaly-detector/anomaly_detector/common",
-            "anomaly_detector.multivariate": "./anomaly-detector/anomaly_detector/multivariate",
-            "anomaly_detector.univariate": "./anomaly-detector/anomaly_detector/univariate",
-        },
+        packages=list(all_package.keys()),
+        package_dir=all_package,
         ext_modules=cythonize(extensions),
         include_package_data=True,
         cmdclass=cmdclass,
@@ -77,7 +87,7 @@ if __name__ == "__main__":
         ],
         keywords=["machine learning", "time series", "anomaly detection"],
         include_dirs=[numpy.get_include()],
-        python_requires='>=3.8.0',
+        python_requires='>=3.9.0',
         install_requires=REQUIREMENTS,
         classifiers=[
             "Development Status :: 4 - Beta",

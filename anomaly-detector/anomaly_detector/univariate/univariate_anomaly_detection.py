@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import numpy as np
+
 from anomaly_detector.univariate.resource.error_message import *
 from anomaly_detector.univariate.util import Granularity, get_indices_from_timestamps, DEFAULT_FILL_UP_MODE, FillUpMode, BoundaryVersion
 from anomaly_detector.univariate.util.enum import default_gran_window

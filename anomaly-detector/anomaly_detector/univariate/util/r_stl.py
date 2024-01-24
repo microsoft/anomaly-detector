@@ -26,7 +26,7 @@ def stl_core(data, np=None):
         ``data`` timeseries.
     """
     res_ts = STL(data, np, "periodic", robust=True)
-    return pandas.DataFrame({"seasonal": res_ts.seasonal,"trend": res_ts.trend, "remainder": res_ts.remainder})
+    return pandas.DataFrame({"seasonal": res_ts.seasonal, "trend": res_ts.trend, "remainder": res_ts.remainder})
 
 
 def stl_log(data, np=None):
@@ -45,7 +45,7 @@ def stl_log(data, np=None):
     base = min(data)
     if base < 1:
         data = npy.subtract(data, base)
-        data = data + 1   # add 1 along in case value scale in _data is extreme compared with 1
+        data = data + 1  # add 1 along in case value scale in _data is extreme compared with 1
 
     result = STL(npy.log(data), np, "periodic", robust=True)
     trend_log = result.trend
@@ -59,7 +59,6 @@ def stl_log(data, np=None):
         trend = trend - 1
         trend = trend + base
 
-
     try:
         res_ts = pandas.DataFrame({"seasonal": seasonal,
                                    "trend": trend,
@@ -68,7 +67,7 @@ def stl_log(data, np=None):
         raise e
 
     return res_ts
-    
+
 
 def stl(data, np=None, log_transform=False):
     if log_transform:
