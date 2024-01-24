@@ -39,7 +39,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./dist/anomaly_detector-0.1.0-cp310-cp310-linux_x86_64.whl
-          asset_name: anomaly_detector-0.1.0.whl
+          asset_name: anomaly_detector-0.1.0-cp310-cp310-linux_x86_64.whl
           asset_content_type: application/whl
 
       - uses: eregon/publish-release@v1
