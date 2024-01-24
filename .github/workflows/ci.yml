@@ -33,13 +33,16 @@ jobs:
 
       - name: install dependence
         working-directory: anomaly-detector
-        run: poetry install
+        run: |
+          poetry lock --no-update
+          poetry install
 
       - name: gen .pyd file
         run: |
           pip install Cython
           pip install numpy 
           python setup.py sdist bdist_wheel
+
       - name: copy .pyd file
         run: find ./build -name "*.pyd" -exec cp -t  ./anomaly-detector/anomaly_detector/univariate {} +
 
