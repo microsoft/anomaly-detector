@@ -33,8 +33,7 @@ jobs:
 
       - name: install dependence
         working-directory: anomaly-detector
-        run: |
-          poetry install
+        run: poetry install
 
       - name: gen .pyd file
         run: |
@@ -50,7 +49,7 @@ jobs:
         working-directory: anomaly-detector/tests
         run: |
           pip install pytest
-          poetry run pytest -k "test_"
+          poetry run pytest test_demo.py
 #          python test_demo.py
 #          python uvad_test.py
 
