@@ -1,7 +1,7 @@
 name: publish_release
 on:
   push:
-    branches: [ "dev" ]
+    branches: [ "main" ]
 
 jobs:
   release:
