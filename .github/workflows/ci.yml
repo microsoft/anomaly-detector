@@ -44,6 +44,7 @@ jobs:
         run: |
           pip install Cython
           pip install numpy
+          pip install setuptools
           python setup.py build_ext --inplace
 
       - name: run the test script
