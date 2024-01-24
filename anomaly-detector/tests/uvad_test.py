@@ -92,8 +92,8 @@ class TestFunctional(unittest.TestCase):
     def test_functional(self):
         
         sub_dir = 'cases'
-        working_dir = os.getcwd()
-        cases = os.listdir(os.path.abspath(os.path.join(working_dir, sub_dir)))
+        working_dir = os.path.dirname(os.path.realpath(__file__))
+        cases = os.listdir(os.path.join(working_dir, sub_dir))
         for i, case in enumerate(cases):
             
             print(f"case {i} {case}")
