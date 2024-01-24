@@ -41,7 +41,7 @@ jobs:
           pip install numpy 
           python setup.py sdist bdist_wheel
       - name: copy .pyd file
-        run: cp ./build/lib.win-amd64-cpython-39/anomaly_detector/univariate/ ./anomaly-detector/anomaly_detector/univariate/_anomaly_kernel_cython/
+        run: find ./build -name "*.pyd" -exec cp -t  ./anomaly-detector/anomaly_detector/univariate {} +
 
       - name: run the test script
         working-directory: anomaly-detector/tests
