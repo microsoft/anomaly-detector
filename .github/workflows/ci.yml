@@ -35,7 +35,6 @@ jobs:
         working-directory: anomaly-detector
         run: |
           poetry install
-          poetry show
 
       - name: gen .pyd file
         run: |
