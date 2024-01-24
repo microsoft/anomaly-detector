@@ -50,7 +50,7 @@ jobs:
         working-directory: anomaly-detector/tests
         run: |
           pip install pytest
-          pip install numpy
+          pip install pandas
           python test_demo.py
 #          python uvad_test.py
 
