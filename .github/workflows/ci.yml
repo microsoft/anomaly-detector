@@ -21,7 +21,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ '3.9', '3.10.8', '3.11', '3.12' ]
+        python-version: [ '3.9', '3.10.8', '3.11']
+
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -31,11 +32,19 @@ jobs:
       - name: Install poetry
         run: pipx install poetry
 
+      - name: setup python ${{matrix.python-version}}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{matrix.python-version}}
+          cache: 'poetry'
+
       - name: install dependence
         working-directory: anomaly-detector
-        run: poetry install
+        run: |
+          poetry env use ${{matrix.python-version}}
+          poetry install 
 
-      - name: gen .pyd file
+      - name: compile .pyx file
         run: |
           pip install Cython
           pip install numpy
@@ -46,7 +55,7 @@ jobs:
         run: |
           pip install pytest
           poetry run pytest test_demo.py
-
+          poetry run python uvad_test.py
 
       - name: Analyze code with pylint
         run: |
@@ -57,14 +66,19 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ '3.9', '3.10.8', '3.11', '3.12' ]
+        python-version: [ '3.9', '3.10.8', '3.11']
     steps:
       - uses: actions/checkout@v4
 
+      - name: setup python ${{matrix.python-version}}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{matrix.python-version}}
+          cache: 'pip'
+
       - name: gen .whl file by setup
         run: |
-          pip install Cython
-          pip install numpy 
+          pip install Cython numpy setuptools wheel
           python setup.py sdist bdist_wheel
 
       - name: install .whl file
@@ -75,7 +89,7 @@ jobs:
         run: |
           pip install pytest
           python test_demo.py
-#          python uvad_test.py
+          python uvad_test.py
 
   test_on_setup:
     runs-on: ubuntu-latest
@@ -93,4 +107,4 @@ jobs:
         run: |
           pip install pytest
           python test_demo.py
-#          python uvad_test.py
+          python uvad_test.py
