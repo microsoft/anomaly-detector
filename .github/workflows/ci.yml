@@ -23,6 +23,7 @@ jobs:
       matrix:
         python-version: [ '3.9', '3.10.8', '3.11']
 
+
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -44,6 +45,12 @@ jobs:
           poetry install 
 
       - name: compile .pyx file
+        run: |
+          pip install Cython
+          pip install numpy
+          python setup.py build_ext --inplace
+
+      - name: gen .pyd file
         run: |
           pip install Cython
           pip install numpy
