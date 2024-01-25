@@ -21,8 +21,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.10.8']
-#        python-version: [ '3.9', '3.10.8', '3.11']
+        python-version: [ '3.9', '3.10.8', '3.11']
+#        python-version: ['3.10.8']
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -41,7 +41,7 @@ jobs:
         working-directory: anomaly-detector
         run: poetry install
 
-      - name: gen .pyd file
+      - name: compile .pyx file
         run: |
           pip install Cython
           pip install numpy
