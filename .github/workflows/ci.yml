@@ -28,14 +28,14 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
 
+      - name: Install poetry
+        run: pipx install poetry
+
       - name: setup python ${{matrix.python-version}}
         uses: actions/setup-python@v4
         with:
           python-version: ${{matrix.python-version}}
           cache: 'poetry'
-
-      - name: Install poetry
-        run: pipx install poetry
 
       - name: install dependence
         working-directory: anomaly-detector
@@ -55,7 +55,6 @@ jobs:
           pip install pytest
           poetry run pytest test_demo.py
           poetry run python uvad_test.py
-
 
       - name: Analyze code with pylint
         run: |
