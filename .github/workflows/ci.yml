@@ -32,6 +32,7 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{matrix.python-version}}
+          cache: 'poetry'
 
       - name: Install poetry
         run: pipx install poetry
@@ -73,6 +74,7 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{matrix.python-version}}
+          cache: 'pip'
 
       - name: gen .whl file by setup
         run: |
