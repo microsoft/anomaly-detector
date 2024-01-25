@@ -76,7 +76,7 @@ jobs:
 
       - name: gen .whl file by setup
         run: |
-          pip install Cython numpy wheel
+          pip install Cython numpy setuptools wheel
           python setup.py sdist bdist_wheel
 
       - name: install .whl file
