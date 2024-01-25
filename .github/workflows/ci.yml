@@ -39,7 +39,9 @@ jobs:
 
       - name: install dependence
         working-directory: anomaly-detector
-        run: poetry install
+        run: |
+          poetry env use ${{matrix.python-version}}
+          poetry install
 
       - name: compile .pyx file
         run: |
