@@ -54,7 +54,7 @@ jobs:
         run: |
           pip install pytest
           poetry run pytest test_demo.py
-#          poetry run python uvad_test.py
+          poetry run python uvad_test.py
 
 
       - name: Analyze code with pylint
@@ -88,7 +88,7 @@ jobs:
         run: |
           pip install pytest
           python test_demo.py
-#          python uvad_test.py
+          python uvad_test.py
 
   test_on_setup:
     runs-on: ubuntu-latest
@@ -106,4 +106,4 @@ jobs:
         run: |
           pip install pytest
           python test_demo.py
-#          python uvad_test.py
+          python uvad_test.py
