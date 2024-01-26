@@ -1,2 +1,2 @@
 from .multivariate.model import MultivariateAnomalyDetector
-from .univariate.univariate_anomaly_detection import UnivariateAnomalyDetector
+from .univariate.univariate_anomaly_detection import UnivariateAnomalyDetector, EntireAnomalyDetector, LatestAnomalyDetector

@@ -1,22 +1,25 @@
 import os
 import pandas as pd
 import numpy as np
-
+from typing import Optional, Dict, Any
 from anomaly_detector.univariate.resource.error_message import *
 from anomaly_detector.univariate.util import Granularity, get_indices_from_timestamps, DEFAULT_FILL_UP_MODE, FillUpMode, BoundaryVersion
 from anomaly_detector.univariate.util.enum import default_gran_window
 from anomaly_detector.common.exception import AnomalyDetectionRequestError
+from anomaly_detector.base import BaseAnomalyDetector
 
 from anomaly_detector.univariate import AnomalyDetectionModel
 from anomaly_detector.univariate.util.fields import DEFAULT_PERIOD, DEFAULT_GRANULARITY_NONE,DEFAULT_MARGIN_FACTOR, DEFAULT_FILL_UP_MODE, FillUpMode, BoundaryVersion, VALUE_LOWER_BOUND, VALUE_UPPER_BOUND, DetectType, ExpectedValue, UpperMargin, LowerMargin, IsNegativeAnomaly, IsPositiveAnomaly, IsAnomaly, Period, SuggestedWindow
 from anomaly_detector.univariate.util import BoundaryVersion
 from anomaly_detector.univariate.util.refine import get_margins
 
-class UnivariateAnomalyDetector:
-    def __init__(self):
-
-        self.error_msg = None
-        self.error_code = 'BadArgument'
+class UnivariateAnomalyDetector(BaseAnomalyDetector):
+    def __init__(self, detect_mode = None):
+        
+        super(UnivariateAnomalyDetector, self).__init__()
+        self._error_msg = None
+        self._error_code = 'BadArgument'
+        self._detect_mode = detect_mode
 
     def is_timestamp_ascending(self, series):
         count = len(series)
@@ -231,17 +234,19 @@ class UnivariateAnomalyDetector:
         model_params['indices'] = params['indices']
         return data, model_params
 
-    def predict(self, data, params):
+    def predict(self, context, data: pd.DataFrame, params: Optional[Dict[str, Any]] = None):
 
         data, model_params = self.parse_arg(data, params)
+        if self._detect_mode is None:
+            self._detect_mode = params['detect_mode']
         
-        if self.error_msg is not None:
-            raise AnomalyDetectionRequestError(error_code=self.error_code, error_msg=self.error_msg)
+        if self._error_msg is not None:
+            raise AnomalyDetectionRequestError(error_code=self._error_code, error_msg=self.error_msg)
 
         detector = AnomalyDetectionModel(series=data, **model_params)
         
         results, period, spectrum_period, model_id, do_fill_up = detector.detect(
-            period=params.get('period',DEFAULT_PERIOD), last_value=data[-1] if params['detect_mode'] == DetectType.LATEST else None)
+            period=params.get('period',DEFAULT_PERIOD), last_value=data[-1] if self._detect_mode == DetectType.LATEST else None)
 
         try:
             results["timestamp"] = [x['timestamp'] for x in data]
@@ -249,7 +254,7 @@ class UnivariateAnomalyDetector:
             results["timestamp"] = [x for x in range(len(data))]
 
         results_items= {}
-        if params['detect_mode'] == DetectType.ENTIRE:
+        if self._detect_mode == DetectType.ENTIRE:
             
             results = results.sort_index()        
             expected_value, upper_margin, lower_margin, anomaly_neg, anomaly_pos, anomaly, severity, boundary_units, anomaly_scores \
@@ -303,5 +308,13 @@ class UnivariateAnomalyDetector:
                     SuggestedWindow: suggested_window
                 }}             
             ]
-        
         return result_list
+    
+
+class EntireAnomalyDetector(UnivariateAnomalyDetector):
+    def __init__(self):
+        super(EntireAnomalyDetector, self).__init__(DetectType.ENTIRE)
+
+class LatestAnomalyDetector(UnivariateAnomalyDetector):
+    def __init__(self):
+        super(LatestAnomalyDetector, self).__init__(DetectType.LATEST)

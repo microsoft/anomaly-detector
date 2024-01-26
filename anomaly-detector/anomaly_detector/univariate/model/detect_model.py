@@ -92,7 +92,7 @@ def merge_with_delta(results, func, args):
 
 class AnomalyDetectionModel:
     def __init__(self, series=None, max_anomaly_ratio=DEFAULT_MAX_RATIO, alpha=DEFAULT_ALPHA, threshold=DEFAULT_THRESHOLD, granularity=DEFAULT_GRANULARITY_NONE, interval=None, indices=None,
-                 fill_up_mode=DEFAULT_FILL_UP_MODE, fixed_value_to_fill=None, need_trend=False, need_spectrum_period=False, detector=dict(), detect_mode=None):
+                 fill_up_mode=DEFAULT_FILL_UP_MODE, fixed_value_to_fill=None, need_trend=False, need_spectrum_period=False, detector=dict()):
         self.__values = [float(item["value"]) for item in series]
         self.__max_ratio = max_anomaly_ratio
         self.__alpha = alpha
