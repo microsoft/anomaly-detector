@@ -20,7 +20,7 @@ def call_entire(content):
     # init model
     detector = UnivariateAnomalyDetector()
     # predict
-    response = detector.predict(data, params)
+    response = detector.predict(None, data, params)
     # compare period
     if 'period' in content['response'] and response[0].get('result')[Period] != content['response']['period']:
         return False, 'Error period'
@@ -55,7 +55,7 @@ def call_last(content):
     # init model
     detector = UnivariateAnomalyDetector()
     # predict
-    response = detector.predict(data, params)
+    response = detector.predict(None, data, params)
     # compare period
     if 'period' in content['response'] and response[0].get('result')[Period] != content['response']['period']:
         return False, 'Error period'
