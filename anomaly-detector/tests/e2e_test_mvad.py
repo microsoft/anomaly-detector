@@ -2,10 +2,9 @@ import mlflow
 import numpy as np
 import pandas as pd
 from anomaly_detector import MultivariateAnomalyDetector
-from anomaly_detector import UnivariateAnomalyDetector
 from mlflow.models import infer_signature
 
-mlflow.set_tracking_uri(uri="http://127.0.0.1:5000")
+mlflow.set_tracking_uri(uri="http://127.0.0.1:8080")
 
 
 def main():
@@ -26,7 +25,7 @@ def main():
         model.fit(training_data, params=params)
         predict_params = {"start_time": "string", "end_time": "string"}
         signature = infer_signature(params=predict_params)
-        print(model)
+
         model_info = mlflow.pyfunc.log_model(
             python_model=model,
             artifact_path="mvad_artifacts",

@@ -4,7 +4,7 @@ import pandas as pd
 from anomaly_detector import EntireAnomalyDetector
 from mlflow.models import infer_signature
 
-mlflow.set_tracking_uri(uri="http://127.0.0.1:5000")
+mlflow.set_tracking_uri(uri="http://127.0.0.1:8080")
 
 
 def main():
@@ -24,7 +24,7 @@ def main():
         model = EntireAnomalyDetector()
 
         signature = infer_signature(params=params)
-        print(model)
+        
         model_info = mlflow.pyfunc.log_model(
             python_model=model,
             artifact_path="uvad_artifacts",
