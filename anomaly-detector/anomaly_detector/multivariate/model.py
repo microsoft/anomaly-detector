@@ -460,7 +460,7 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
         num_attentions = top_attn_scores.shape[2]
         diff = num_index_values - num_results
         assert diff >= 0, "invalid length"
-        results = {}
+        results = []
         for i in range(diff, num_index_values):
             idx = i - diff
             is_anomaly = bool(is_anomalies[idx])
@@ -488,10 +488,13 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
                         },
                     }
                 )
-            results[index_values[i]] = {
-                "is_anomaly": is_anomaly,
-                "score": score,
-                "severity": severity,
-                "interpretation": interpretation
-            }
+            results.append(
+                {
+                    "index": index_values[i],
+                    "is_anomaly": is_anomaly,
+                    "score": score,
+                    "severity": severity,
+                    "interpretation": interpretation
+                }
+            )
         return results
