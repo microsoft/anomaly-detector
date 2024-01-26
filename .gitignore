@@ -401,5 +401,6 @@ mlruns/
 mlartifacts/
 model/
 venv/
+dist/
 
 .idea/
