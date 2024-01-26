@@ -47,7 +47,7 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
         self.variables: Optional[List[str]] = None
 
     def fit(self, data: pd.DataFrame, params: Dict[str, Any] = None) -> None:
-        variables, values, config = self._verify_data_and_params(data, params)
+        variables, values, config = self._process_data_and_params(data, params)
         self.config = config
         self.variables = variables
         _window = self.config.threshold_window + self.config.input_size
@@ -211,14 +211,17 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
     def predict(
             self, context, data: pd.DataFrame, params: Optional[Dict[str, Any]] = None
     ):
-        variables, values, _ = self._verify_data_and_params(data, params)
+        variables, values, _ = self._process_data_and_params(data, params)
 
         if self.model is None:
             try:
                 self.load_checkpoint(self.model_path)
             except Exception as ex:
                 raise ValueError(f"Cannot load model. Please train model. {repr(ex)}")
-
+        if len(values) < self.config.threshold_window + self.config.input_size:
+            raise ValueError(
+                f"Not enough data. Minimum size is {self.config.threshold_window + self.config.input_size}"
+            )
         hard_th_upper = max(MultiADConstants.ANOMALY_UPPER_THRESHOLD, self.threshold)
         hard_th_lower = min(MultiADConstants.ANOMALY_LOWER_THRESHOLD, self.threshold)
         torch.manual_seed(self.config.seed)
@@ -382,7 +385,7 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
         train_score_max = np.max(train_scores)
         return threshold, train_score_max, train_score_min
 
-    def _verify_data_and_params(self, data: pd.DataFrame, params: Dict[str, Any] = None):
+    def _process_data_and_params(self, data: pd.DataFrame, params: Dict[str, Any] = None):
         if params is None:
             params = {}
 
