@@ -1,7 +1,7 @@
 import mlflow
 import numpy as np
 import pandas as pd
-from anomaly_detector import UnivariateAnomalyDetector
+from anomaly_detector import EntireAnomalyDetector
 from mlflow.models import infer_signature
 
 mlflow.set_tracking_uri(uri="http://127.0.0.1:5000")
@@ -11,7 +11,6 @@ def main():
     mlflow.set_experiment("MLflow Quickstart 2")
 
     params = {
-        "detect_mode": "entire",
         "granularity": "monthly", 
         "maxAnomalyRatio": 0.25, 
         "sensitivity": 95, 
@@ -22,7 +21,7 @@ def main():
         mlflow.log_params(params)
         mlflow.set_tag("Training Info", "Univariate Anomaly Detector")
 
-        model = UnivariateAnomalyDetector()
+        model = EntireAnomalyDetector()
 
         signature = infer_signature(params=params)
         print(model)
