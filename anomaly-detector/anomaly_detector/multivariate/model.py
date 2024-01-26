@@ -1,9 +1,7 @@
-import copy
 import os
 import time
-from copy import deepcopy
 from dataclasses import fields
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
 import mlflow
 import numpy as np
@@ -11,10 +9,9 @@ import pandas as pd
 import torch
 import torch.utils.data as torch_data
 from anomaly_detector.base import BaseAnomalyDetector
-from anomaly_detector.common.constants import TIMESTAMP, FillNAMethod
+from anomaly_detector.common.constants import FillNAMethod
 from anomaly_detector.common.data_processor import MultiADDataProcessor
 from anomaly_detector.common.exception import DataFormatError
-from anomaly_detector.common.time_util import dt_to_str
 from anomaly_detector.multivariate.contract import (
     MultiADConfig,
     MultiADConstants,
@@ -257,7 +254,7 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
             ]
         )
         severity = compute_severity(inference_scores)
-        severity[is_anomalies == False] = 0.0
+        severity[~is_anomalies] = 0.0
         if attn_feats is not None:
             inference_length = len(is_anomalies)
             attn_feats = torch.from_numpy(attn_feats)
@@ -463,39 +460,38 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
         num_attentions = top_attn_scores.shape[2]
         diff = num_index_values - num_results
         assert diff >= 0, "invalid length"
-        results = []
-        for i in range(num_index_values):
-            result_item = {"index": index_values[i], "result": None}
-            if i >= diff:
-                idx = i - diff
-                is_anomaly = is_anomalies[idx]
-                score = inference_scores[idx]
-                severity = severity_scores[idx]
-                interpretation = []
-                for j in range(num_contributors):
-                    changed_values = []
-                    changed_variables = []
-                    for k in range(num_attentions):
-                        if abs(top_attn_scores[idx, j, k]) > min(
-                                0.001, 1.0 / (1.25 * num_series_names)
-                        ):
-                            changed_values.append(top_attn_scores[idx, j, k])
-                            var_idx = top_attn_scores_idx[idx, j, k]
-                            changed_variables.append(variables[var_idx])
-                    var_idx = top_k_contributors_idx[idx, j]
-                    interpretation.append(
-                        {
-                            "variable_name": variables[var_idx],
-                            "contribution_score": contributor_scores[idx, j],
-                            "correlation_changes": {
-                                "changed_variables": changed_variables,
-                                "changed_values": changed_values,
-                            },
-                        }
-                    )
-                result_item = {"interpretation": interpretation, "is_anomaly": is_anomaly, "score": score,
-                               "severity": severity}
-
-            results.append({"index": index_values[i], "result": result_item})
-
+        results = {}
+        for i in range(diff, num_index_values):
+            idx = i - diff
+            is_anomaly = bool(is_anomalies[idx])
+            score = float(inference_scores[idx])
+            severity = float(severity_scores[idx])
+            interpretation = []
+            for j in range(num_contributors):
+                changed_values = []
+                changed_variables = []
+                for k in range(num_attentions):
+                    if abs(top_attn_scores[idx, j, k]) > min(
+                            0.001, 1.0 / (1.25 * num_series_names)
+                    ):
+                        changed_values.append(float(top_attn_scores[idx, j, k]))
+                        var_idx = int(top_attn_scores_idx[idx, j, k])
+                        changed_variables.append(variables[var_idx])
+                var_idx = top_k_contributors_idx[idx, j]
+                interpretation.append(
+                    {
+                        "variable_name": str(variables[var_idx]),
+                        "contribution_score": float(contributor_scores[idx, var_idx]),
+                        "correlation_changes": {
+                            "changed_variables": changed_variables,
+                            "changed_values": changed_values,
+                        },
+                    }
+                )
+            results[index_values[i]] = {
+                "is_anomaly": is_anomaly,
+                "score": score,
+                "severity": severity,
+                "interpretation": interpretation
+            }
         return results
