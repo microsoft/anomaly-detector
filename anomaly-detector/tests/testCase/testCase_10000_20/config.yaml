@@ -7,5 +7,14 @@ small_window:
 big_window:
   sliding_window: 3000
   device: "cpu"
-#inference_data_smaller_than_window:
-#  sl
+invalid_fillna_config:
+  sliding_window: 200
+  device: "cpu"
+  fill_na_method: "invalid_method"
+invalid_fillna_value:
+  sliding_window: 200
+  device: "cpu"
+  fill_na_method: "invalid_value"
+invalid_window_value:
+  sliding_window: "invalid_window_value"
+  device: "cpu"
