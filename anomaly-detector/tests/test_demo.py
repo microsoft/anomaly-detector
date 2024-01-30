@@ -111,7 +111,7 @@ class TestAnomalyDetector:
                     contribution_score = [i["contribution_score"] for i in result["interpretation"]]
                     for i in range(1, len(contribution_score)):
                         if contribution_score[i] > contribution_score[i - 1]:
-                            raise Exception("incorrect sorting")
+                            raise Exception("incorrect sorting by contribution score")
 
                 # 3. Check severity is 0 if is anomaly is false
                 for result in response:
@@ -125,7 +125,7 @@ class TestAnomalyDetector:
                     for changed_values in changed_values_of_all_vars:
                         for i in range(1, len(changed_values)):
                             if abs(changed_values[i]) > abs(changed_values[i - 1]):
-                                raise Exception
+                                raise Exception("incorrect sorting by changed values")
 
 
 if __name__ == "__main__":
