@@ -1,3 +1,7 @@
+# ---------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# ---------------------------------------------------------
+
 import pandas as pd
 
 from anomaly_detector.univariate.util import Direction, IsPositiveAnomaly, IsNegativeAnomaly, IsAnomaly

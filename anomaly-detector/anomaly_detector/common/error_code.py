@@ -1,3 +1,7 @@
+# ---------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# ---------------------------------------------------------
+
 class ErrorCodes:
     # invalid data format
     InvalidDataFormat = "Invalid data format. {0}"

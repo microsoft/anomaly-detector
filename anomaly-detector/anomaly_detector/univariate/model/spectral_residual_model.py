@@ -1,3 +1,7 @@
+# ---------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# ---------------------------------------------------------
+
 from anomaly_detector.univariate.detectors.spectral_residual import SpectralResidual
 from anomaly_detector.univariate.util import average_filter, Value, ExpectedValue, IsAnomaly, IsNegativeAnomaly, IsPositiveAnomaly, Trend, \
     AnomalyScore, MIN_SR_RAW_SCORE, MAX_SR_RAW_SCORE, SKELETON_POINT_SCORE_THRESHOLD

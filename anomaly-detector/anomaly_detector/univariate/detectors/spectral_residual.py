@@ -1,3 +1,7 @@
+# ---------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# ---------------------------------------------------------
+
 from anomaly_detector.univariate.util import np, average_filter, AnomalyId, AnomalyScore, IsAnomaly, EPS, ModelType, SKELETON_POINT_SCORE_THRESHOLD
 from anomaly_detector.univariate._anomaly_kernel_cython import spectral_residual_transform_core
 import pandas as pd

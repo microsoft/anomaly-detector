@@ -1,3 +1,7 @@
+# ---------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# ---------------------------------------------------------
+
 import numpy as np
 from anomaly_detector.univariate.util import Value, ExpectedValue, IsAnomaly, IsNegativeAnomaly, IsPositiveAnomaly, \
     AnomalyScore, Trend, EPS
