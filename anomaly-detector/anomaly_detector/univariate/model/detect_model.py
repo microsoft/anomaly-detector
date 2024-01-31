@@ -1,3 +1,7 @@
+# ---------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# ---------------------------------------------------------
+
 from anomaly_detector.univariate.model.dynamic_threshold import dynamic_threshold_detection
 from anomaly_detector.univariate.model.seasonal_series import seasonal_series_detection
 from anomaly_detector.univariate.resource.error_message import *

@@ -1,3 +1,7 @@
+# ---------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# ---------------------------------------------------------
+
 from anomaly_detector.univariate.util import DEFAULT_TREND_TYPE, DEFAULT_DETECTOR_TYPE, \
     DEFAULT_GRANULARITY, DEFAULT_PERIOD_THRESH, DEFAULT_MIN_VAR, DEFAULT_INTERVAL
 from anomaly_detector.univariate.period import SimpleDetector, SpectrumDetector

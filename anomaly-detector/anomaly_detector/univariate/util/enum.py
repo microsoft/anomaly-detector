@@ -1,3 +1,7 @@
+# ---------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# ---------------------------------------------------------
+
 default_gran_window = {
     "daily": 7 * 4,
     "minutely": 1440,

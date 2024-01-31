@@ -1,3 +1,7 @@
+# ---------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# ---------------------------------------------------------
+
 import numpy as np
 from anomaly_detector.univariate._anomaly_kernel_cython import max_gcv, gcv
 from seasonal import periodogram_peaks
