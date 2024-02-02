@@ -6,7 +6,7 @@ from enum import Enum
 import pandas as pd
 from collections import Counter
 from anomaly_detector.univariate.util.enum import default_gran_window
-from anomaly_detector.univariate.util.fields import DetectType, IsAnomaly, ExpectedValue, Severity, IsPositiveAnomaly, IsNegativeAnomaly
+from anomaly_detector.univariate.util.fields import DetectType, IsAnomaly, ExpectedValue, Severity, IsPositiveAnomaly, IsNegativeAnomaly, EPS
 from anomaly_detector.univariate.univariate_anomaly_detection import UnivariateAnomalyDetector
 from anomaly_detector.univariate.util.fields import DetectType, IsAnomaly, ExpectedValue, Severity, IsPositiveAnomaly, IsNegativeAnomaly, Period
 def call_entire(content):
@@ -34,10 +34,10 @@ def call_entire(content):
                 if response[i]['result'][IsAnomaly] != content['response']['isAnomaly'][i]:
                     return False, 'isAnomaly not match'
     if 'expectedValues' in content['response']:
-        tolerant_ratio = 0.05
+        tolerant_ratio = 0.05        
         for true_exp, new_exp in zip(content['response']['expectedValues'], [item["result"][ExpectedValue] for item in response]):
-            upper = true_exp + tolerant_ratio * abs(true_exp)
-            lower = true_exp - tolerant_ratio * abs(true_exp)
+            upper = true_exp + max(EPS, tolerant_ratio * abs(true_exp))
+            lower = true_exp - max(EPS, tolerant_ratio * abs(true_exp))
             if new_exp < lower or new_exp > upper:
                 return False, 'expectedValues difference exceed 5 percents'
     
@@ -74,8 +74,8 @@ def call_last(content):
     if 'expectedValue' in content['response']:
         tolerant_ratio = 0.05
         true_exp = content['response']['expectedValue']
-        upper = true_exp + tolerant_ratio * abs(true_exp)
-        lower = true_exp - tolerant_ratio * abs(true_exp)
+        upper = true_exp + max(EPS, tolerant_ratio * abs(true_exp))
+        lower = true_exp - max(EPS, tolerant_ratio * abs(true_exp))
         if response[0].get('result')[ExpectedValue] < lower or response[0].get('result')[ExpectedValue] > upper:
             return False, 'expectedValue difference exceed 5 percents'
 
