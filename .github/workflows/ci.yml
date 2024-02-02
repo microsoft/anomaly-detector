@@ -42,6 +42,7 @@ jobs:
         working-directory: anomaly-detector
         run: |
           poetry env use ${{matrix.python-version}}
+          poetry lock --no-update
           poetry install 
 
       - name: compile .pyx file
