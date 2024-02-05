@@ -5,7 +5,6 @@
 import os
 from pathlib import Path
 from Cython.Build import cythonize
-from setuptools.command.build_ext import build_ext
 from setuptools.command.sdist import sdist
 from setuptools import find_packages, setup, Extension
 import numpy

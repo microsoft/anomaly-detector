@@ -405,3 +405,6 @@ dist/
 temp/
 
 .idea/
+
+
+.script\Dockerfile
