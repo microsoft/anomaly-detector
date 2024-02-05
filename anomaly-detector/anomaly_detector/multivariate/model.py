@@ -1,9 +1,11 @@
-import copy
+# ---------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# ---------------------------------------------------------
+
 import os
 import time
-from copy import deepcopy
 from dataclasses import fields
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
 import mlflow
 import numpy as np
@@ -11,10 +13,9 @@ import pandas as pd
 import torch
 import torch.utils.data as torch_data
 from anomaly_detector.base import BaseAnomalyDetector
-from anomaly_detector.common.constants import TIMESTAMP, FillNAMethod
+from anomaly_detector.common.constants import FillNAMethod
 from anomaly_detector.common.data_processor import MultiADDataProcessor
 from anomaly_detector.common.exception import DataFormatError
-from anomaly_detector.common.time_util import dt_to_str
 from anomaly_detector.multivariate.contract import (
     MultiADConfig,
     MultiADConstants,
@@ -40,21 +41,17 @@ from tqdm import tqdm
 class MultivariateAnomalyDetector(BaseAnomalyDetector):
     def __init__(self):
         super(MultivariateAnomalyDetector, self).__init__()
-        self.config: MultiADConfig = None
-        self.model: MultivariateGraphAttnDetector = None
-        self.pct_weight: List = None
-        self.threshold: float = None
-        self.train_score_max: float = None
-        self.train_score_min: float = None
-        self.model_path: str = None
-        self.variables: List[str] = None
+        self.config: Optional[MultiADConfig] = None
+        self.model: Optional[MultivariateGraphAttnDetector] = None
+        self.pct_weight: Optional[List] = None
+        self.threshold: Optional[float] = None
+        self.train_score_max: Optional[float] = None
+        self.train_score_min: Optional[float] = None
+        self.model_path: Optional[str] = None
+        self.variables: Optional[List[str]] = None
 
-    # def load_context(self, context):
-    #     print(context.artifacts)
-    #     self.load_checkpoint(context.artifacts["model"])
-
-    def fit(self, data: pd.DataFrame, params: Dict = None):
-        _, variables, values, config = self._verify_data_and_params(data, params)
+    def fit(self, data: pd.DataFrame, params: Dict[str, Any] = None) -> None:
+        variables, values, config = self._process_data_and_params(data, params)
         self.config = config
         self.variables = variables
         _window = self.config.threshold_window + self.config.input_size
@@ -218,16 +215,17 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
     def predict(
             self, context, data: pd.DataFrame, params: Optional[Dict[str, Any]] = None
     ):
-        effective_timestamps, variables, values, _ = self._verify_data_and_params(
-            data, params
-        )
+        variables, values, _ = self._process_data_and_params(data, params)
 
         if self.model is None:
             try:
                 self.load_checkpoint(self.model_path)
             except Exception as ex:
                 raise ValueError(f"Cannot load model. Please train model. {repr(ex)}")
-
+        if len(values) < self.config.threshold_window + self.config.input_size:
+            raise ValueError(
+                f"Not enough data. Minimum size is {self.config.threshold_window + self.config.input_size}"
+            )
         hard_th_upper = max(MultiADConstants.ANOMALY_UPPER_THRESHOLD, self.threshold)
         hard_th_lower = min(MultiADConstants.ANOMALY_LOWER_THRESHOLD, self.threshold)
         torch.manual_seed(self.config.seed)
@@ -249,10 +247,7 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
         thresholds = [
             get_threshold(
                 inference_scores[
-                max(0, result_n - self.config.threshold_window - i): len(
-                    inference_scores
-                )
-                                                                     - i
+                    max(0, result_n - self.config.threshold_window - i): len(inference_scores) - i
                 ]
             )
             for i in range(result_n - 1, self.config.threshold_window - 2, -1)
@@ -266,14 +261,7 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
             ]
         )
         severity = compute_severity(inference_scores)
-        severity[is_anomalies == False] = 0.0
-        # inference_scores = inference_scores.tolist()
-        # contributor_scores = contributor_scores.tolist()
-        # total_rmses = total_rmses.tolist()
-        # total_probs = total_probs.tolist()
-        # severity = severity.tolist()
-        # is_anomalies = is_anomalies.tolist()
-        # forecasts = forecasts.tolist()
+        severity[~is_anomalies] = 0.0
         if attn_feats is not None:
             inference_length = len(is_anomalies)
             attn_feats = torch.from_numpy(attn_feats)
@@ -284,8 +272,9 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
                     attn_feats[-inference_length:] - previous_attn[-inference_length:]
             )
         attn_feats = attn_feats.numpy()
+        index_values = data.index.to_list()
         return self._pack_response(
-            effective_timestamps,
+            index_values,
             variables,
             is_anomalies,
             inference_scores,
@@ -400,17 +389,15 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
         train_score_max = np.max(train_scores)
         return threshold, train_score_max, train_score_min
 
-    def _verify_data_and_params(self, data: pd.DataFrame, params):
+    def _process_data_and_params(self, data: pd.DataFrame, params: Dict[str, Any] = None):
+        if params is None:
+            params = {}
+
         # check data
         if not isinstance(data, pd.DataFrame):
             raise DataFormatError(f"data must be pandas.DataFrame not {type(data)}.")
 
-        if TIMESTAMP not in data.columns:
-            raise DataFormatError(f"There should be a `{TIMESTAMP}` column")
-
         # check params
-        start_time = params.get("start_time", data[TIMESTAMP].iloc[0])
-        end_time = params.get("end_time", data[TIMESTAMP].iloc[-1])
         fill_na_method = params.get("fill_na_method", FillNAMethod.Linear.name)
         fill_na_value = params.get("fill_na_value", 0.0)
         params["input_size"], params["threshold_window"] = self.compute_window_sizes(
@@ -418,28 +405,24 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
         )
 
         valid_fields = [f.name for f in fields(MultiADConfig)]
-
-        for key in copy.deepcopy(params):
+        for key in list(params.keys()):
             if key not in valid_fields:
                 params.pop(key)
 
         data_processor = MultiADDataProcessor(
             fill_na_method=fill_na_method,
             fill_na_value=fill_na_value,
-            window=params["input_size"] + params["threshold_window"],
-            start_time=start_time,
-            end_time=end_time,
         )
-        data, effective_timestamps = data_processor.process(data)
+        data = data_processor.process(data)
         variables = data.columns.to_list()
         params["data_dim"] = len(variables)
         values = data.values
         config = MultiADConfig(**params)
-        return effective_timestamps, variables, values, config
+        return variables, values, config
 
+    @staticmethod
     def _pack_response(
-            self,
-            timestamps,
+            index_values,
             variables,
             is_anomalies,
             inference_scores,
@@ -450,7 +433,7 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
         contributor_scores = torch.from_numpy(contributor_scores)
         top_k_contributors_idx = torch.argsort(
             contributor_scores, dim=-1, descending=True
-        )[:, : MultiADConstants.TOP_CONTRIBUTORS_COUNT]
+        )
         top_k_contributors = torch.gather(
             contributor_scores, dim=-1, index=top_k_contributors_idx
         )
@@ -478,48 +461,47 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
         top_attn_scores_idx = top_attn_scores_idx.cpu().numpy()
 
         num_series_names = len(variables)
-        num_timestamps = len(timestamps)
+        num_index_values = len(index_values)
         num_results = len(is_anomalies)
         num_contributors = top_k_contributors.shape[1]
         num_attentions = top_attn_scores.shape[2]
-        diff = num_timestamps - num_results
+        diff = num_index_values - num_results
         assert diff >= 0, "invalid length"
         results = []
-        for i in range(num_timestamps):
-            result_item = {}
-            if i >= diff:
-                idx = i - diff
-                is_anomaly = is_anomalies[idx]
-                score = inference_scores[idx]
-                severity = severity_scores[idx]
-                interpretation = []
-                if is_anomaly:
-                    for j in range(num_contributors):
-                        changed_values = []
-                        changed_variables = []
-                        for k in range(num_attentions):
-                            if abs(top_attn_scores[idx, j, k]) > min(
-                                    0.001, 1.0 / (1.25 * num_series_names)
-                            ):
-                                changed_values.append(top_attn_scores[idx, j, k])
-                                var_idx = top_attn_scores_idx[idx, j, k]
-                                changed_variables.append(variables[var_idx])
-                        var_idx = top_k_contributors_idx[idx, j]
-                        interpretation.append(
-                            {
-                                "variable_name": variables[var_idx],
-                                "contribution_score": contributor_scores[idx, j],
-                                "correlation_changes": {
-                                    "changed_variables": changed_variables,
-                                    "changed_values": changed_values,
-                                },
-                            }
-                        )
-                    result_item = {"interpretation": interpretation}
-                result_item["is_anomaly"] = is_anomaly
-                result_item["score"] = score
-                result_item["severity"] = severity
-
-            results.append({"timestamp": timestamps[i], "result": result_item})
-
+        for i in range(diff, num_index_values):
+            idx = i - diff
+            is_anomaly = bool(is_anomalies[idx])
+            score = float(inference_scores[idx])
+            severity = float(severity_scores[idx])
+            interpretation = []
+            for j in range(num_contributors):
+                changed_values = []
+                changed_variables = []
+                for k in range(num_attentions):
+                    if abs(top_attn_scores[idx, j, k]) > min(
+                            0.001, 1.0 / (1.25 * num_series_names)
+                    ):
+                        changed_values.append(float(top_attn_scores[idx, j, k]))
+                        var_idx = int(top_attn_scores_idx[idx, j, k])
+                        changed_variables.append(variables[var_idx])
+                var_idx = top_k_contributors_idx[idx, j]
+                interpretation.append(
+                    {
+                        "variable_name": str(variables[var_idx]),
+                        "contribution_score": float(contributor_scores[idx, var_idx]),
+                        "correlation_changes": {
+                            "changed_variables": changed_variables,
+                            "changed_values": changed_values,
+                        },
+                    }
+                )
+            results.append(
+                {
+                    "index": index_values[i],
+                    "is_anomaly": is_anomaly,
+                    "score": score,
+                    "severity": severity,
+                    "interpretation": interpretation
+                }
+            )
         return results

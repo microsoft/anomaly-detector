@@ -1,3 +1,7 @@
+# ---------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# ---------------------------------------------------------
+
 InvalidCustomInterval = "The 'customInterval' field must be an integer > 0."
 InvalidJsonFormat = "Invalid Json Format, input data is Empty."
 # add this line

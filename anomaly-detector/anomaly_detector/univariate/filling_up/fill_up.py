@@ -1,3 +1,7 @@
+# ---------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# ---------------------------------------------------------
+
 from .fill_up_methods import *
 from anomaly_detector.univariate.util.fields import DEFAULT_MAXIMUM_FILLUP_LENGTH
 

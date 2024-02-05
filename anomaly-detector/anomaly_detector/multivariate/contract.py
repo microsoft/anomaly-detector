@@ -1,3 +1,7 @@
+# ---------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# ---------------------------------------------------------
+
 from dataclasses import dataclass
 from typing import List
 
@@ -9,11 +13,9 @@ class MultiADConstants:
     INFERENCE_CLIP_MAX = 1000.0
     ANOMALY_UPPER_THRESHOLD = 0.5
     ANOMALY_LOWER_THRESHOLD = 0.3
-    TOP_CONTRIBUTORS_COUNT = 30
     TOP_ATTENTION_COUNT = 10
     DEFAULT_INPUT_SIZE = 200
     DEFAULT_THRESHOLD_WINDOW = 200
-    TOP_ATTENTION_COUNT = 10
 
 
 @dataclass

@@ -1,3 +1,7 @@
+# ---------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# ---------------------------------------------------------
+
 from anomaly_detector.univariate.util import FillUpMode
 from anomaly_detector.univariate.period import period_detection
 

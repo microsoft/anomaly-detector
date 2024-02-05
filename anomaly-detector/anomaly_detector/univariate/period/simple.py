@@ -1,3 +1,7 @@
+# ---------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# ---------------------------------------------------------
+
 import numpy as np
 import math
 from anomaly_detector.univariate._anomaly_kernel_cython import gcv, median_filter, remove_anomaly_in_bucket

@@ -1,3 +1,7 @@
+# ---------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# ---------------------------------------------------------
+
 from anomaly_detector.univariate.detectors.detector import AnomalyDetector
 from anomaly_detector.univariate.util import Direction
 from anomaly_detector.univariate._anomaly_kernel_cython import dynamic_threshold
