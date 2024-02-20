@@ -42,8 +42,10 @@ if __name__ == "__main__":
                 if (s.strip() and not s.startswith("#"))
             ]
 
-
-    REQUIREMENTS = _read_reqs("requirements.txt")
+    try:
+        REQUIREMENTS = _read_reqs("requirements.txt")
+    except Exception:
+        REQUIREMENTS = _read_reqs("anomaly_detector.egg-info/requires.txt")
 
     extensions = [
         Extension("anomaly_detector.univariate._anomaly_kernel_cython",
