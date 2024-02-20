@@ -21,7 +21,7 @@ jobs:
         run: >-
           python3 -m pip install build Cython numpy setuptools wheel --user
       - name: Build a binary wheel and a source tarball
-        run: python3 -m build --no-isolation
+        run: python3 -m build -n -s
       - name: Store the distribution packages
         uses: actions/upload-artifact@v3
         with:
