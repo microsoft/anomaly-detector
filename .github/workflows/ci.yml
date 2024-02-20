@@ -6,9 +6,9 @@ name: CI
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: [ "main", "dev" ]
+    branches: ["main", "dev"]
   pull_request:
-    branches: [ "main", "dev" ]
+    branches: ["main", "dev"]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -21,8 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ '3.9', '3.10.8', '3.11']
-
+        python-version: ["3.9", "3.10.8", "3.11"]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -36,14 +35,14 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{matrix.python-version}}
-          cache: 'poetry'
+          cache: "poetry"
 
       - name: install dependence
         working-directory: anomaly-detector
         run: |
           poetry env use ${{matrix.python-version}}
           poetry lock --no-update
-          poetry install 
+          poetry install
 
       - name: compile .pyx file
         run: |
@@ -67,7 +66,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ '3.9', '3.10.8', '3.11']
+        python-version: ["3.9", "3.10.8", "3.11"]
     steps:
       - uses: actions/checkout@v4
 
@@ -75,7 +74,7 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{matrix.python-version}}
-          cache: 'pip'
+          cache: "pip"
 
       - name: gen .whl file by setup
         run: |
