@@ -79,11 +79,8 @@ if __name__ == "__main__":
         version="0.1.0",
         license="MIT",
         description="Anomaly Detection",
-        # long_description=long_description,
-        # long_description_content_type="text/markdown",
-        # entry_points={"console_scripts": [""]},
         author="test",
-        author_email="anomaly_detector@microsoft.com",
+        author_email="ad-oss@microsoft.com",
         url="https://github.com/microsoft/anomaly-detector",
         data_files=[
             (".", ["README.md"]),
@@ -97,6 +94,6 @@ if __name__ == "__main__":
             "Intended Audience :: Developers",
             "Topic :: Scientific/Engineering :: Artificial Intelligence",
             "License :: OSI Approved :: MIT License",
-            "Programming Language :: Python :: 3.11",
+            "Programming Language :: Python :: 3.9",
         ],
     )

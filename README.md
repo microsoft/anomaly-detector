@@ -1,6 +1,11 @@
 # Environment
-python-version: '3.9', '3.10.8', '3.11'
- 
+Tested on
+
+[![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-390/)
+[![Python 3.10](https://img.shields.io/badge/python-3.10.8-blue.svg)](https://www.python.org/downloads/release/python-3108/)
+[![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/release/python-3110/)
+
+
 # Getting Started
  
 ## Installing from pip
