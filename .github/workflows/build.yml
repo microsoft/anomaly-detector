@@ -37,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: release
-      url: https://pypi.org/p/ms-anomaly-detector # Replace <package-name> with your PyPI project name
+      url: https://pypi.org/project/ms-anomaly-detector # Replace <package-name> with your PyPI project name
     permissions:
       id-token: write # IMPORTANT: mandatory for trusted publishing
 
@@ -101,7 +101,7 @@ jobs:
 
     environment:
       name: test-release
-      url: https://test.pypi.org/p/ms-anomaly-detector
+      url: https://test.pypi.org/project/ms-anomaly-detector
 
     permissions:
       id-token: write # IMPORTANT: mandatory for trusted publishing
