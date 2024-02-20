@@ -84,6 +84,7 @@ if __name__ == "__main__":
         license="MIT",
         description="Anomaly Detection",
         long_description=long_description,
+        long_description_content_type="text/markdown",
         author="Microsoft",
         author_email="ad-oss@microsoft.com",
         url="https://github.com/microsoft/anomaly-detector",
