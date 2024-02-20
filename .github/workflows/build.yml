@@ -19,9 +19,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install pypa/build
         run: >-
-          python3 -m pip install build Cython numpy setuptools --user
-      - name: Build a binary wheel and a source tarball
-        run: python3 -m build
+          python3 -m pip install build Cython numpy setuptools --user && python3 -m build
       - name: Store the distribution packages
         uses: actions/upload-artifact@v3
         with:
