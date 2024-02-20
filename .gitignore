@@ -406,7 +406,8 @@ temp/
 build/
 anomaly_detector.egg-info/
 anomaly-detector/anomaly_detector/univariate/_anomaly_kernel_cython.c
-.idea/
 
+.idea/
+*.so
 
 .script\Dockerfile
