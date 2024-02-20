@@ -74,7 +74,7 @@ if __name__ == "__main__":
 
     all_package = get_all_package_and_dir("./anomaly-detector")
     setup(
-        name="anomaly_detector",
+        name="anomaly-detector",
         packages=list(all_package.keys()),
         package_dir=all_package,
         ext_modules=cythonize(extensions),
