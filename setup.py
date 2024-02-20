@@ -93,6 +93,7 @@ if __name__ == "__main__":
         ],
         keywords=["machine learning", "time series", "anomaly detection"],
         include_dirs=[numpy.get_include()],
+        maintainer=["Anomaly Detector Open Source", "Microsoft"],
         python_requires='>=3.9.0',
         install_requires=REQUIREMENTS,
         classifiers=[
