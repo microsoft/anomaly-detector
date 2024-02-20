@@ -12,6 +12,8 @@ import numpy
 if __name__ == "__main__":
     import os
 
+    with Path(Path(__file__).parent, "README.md").open(encoding="utf-8") as file:
+        long_description = file.read()
 
     def get_all_package_and_dir(directory):
         all_package = {}
@@ -81,7 +83,8 @@ if __name__ == "__main__":
         version="0.1.0",
         license="MIT",
         description="Anomaly Detection",
-        author="test",
+        long_description=long_description,
+        author="Microsoft",
         author_email="ad-oss@microsoft.com",
         url="https://github.com/microsoft/anomaly-detector",
         data_files=[
