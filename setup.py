@@ -74,15 +74,15 @@ if __name__ == "__main__":
 
     all_package = get_all_package_and_dir("./anomaly-detector")
     setup(
-        name="anomaly-detector",
+        name="time-series-anomaly-detector",
         packages=list(all_package.keys()),
         package_dir=all_package,
         ext_modules=cythonize(extensions),
         include_package_data=True,
         cmdclass=cmdclass,
-        version="0.1.0",
+        version="0.2.0",
         license="MIT",
-        description="Anomaly Detection",
+        description="Time Series Anomaly Detection",
         long_description=long_description,
         long_description_content_type="text/markdown",
         author="Microsoft",
