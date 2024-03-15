@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "anomaly-detector"
-version = "0.1.1"
+name = "time-series-anomaly-detector"
+version = "0.2.0"
 description = "Microsoft Anomaly Detector"
 authors = ["Anomaly Detector <anomaly_detector@microsoft.com>"]
 license = "MIT"
