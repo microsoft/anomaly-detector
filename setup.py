@@ -80,7 +80,7 @@ if __name__ == "__main__":
         ext_modules=cythonize(extensions),
         include_package_data=True,
         cmdclass=cmdclass,
-        version="0.2.0",
+        version="0.2.1",
         license="MIT",
         description="Time Series Anomaly Detection",
         long_description=long_description,
