@@ -11,7 +11,7 @@ Tested on
 ## Installing from pip
  
 ```bash
-pip install anomaly-detector
+pip install time-series-anomaly-detector
 ```
  
 ## Installing from Source
