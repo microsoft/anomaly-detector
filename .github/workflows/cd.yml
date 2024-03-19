@@ -1,7 +1,12 @@
 name: Build and Release
 on:
-  push:
-    branches: [dev]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Name of the branch to build and release'
+        required: true
 
 jobs:
   build_and_release:
@@ -19,7 +24,7 @@ jobs:
         run: pip install --upgrade setuptools wheel numpy Cython twine
 
       - name: Build source distribution
-        run: python setup.py sdist
+        run: python setup.py sdist --formats=zip
 
       - name: Create release and upload distribution
         uses: softprops/action-gh-release@v1
@@ -27,6 +32,4 @@ jobs:
           files: dist/*
           tag_name: v${{ github.ref }}
           title: Release ${{ github.ref }}
-          body: |  
-            Changes in this release:  
-            - Add support for anomaly detection  
+          body:  ${{ github.event.pull_request.body }}
