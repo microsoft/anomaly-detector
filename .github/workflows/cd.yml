@@ -1,0 +1,32 @@
+name: Build and Release
+on:
+  push:
+    branches: [dev]
+
+jobs:
+  build_and_release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.10.8
+
+      - name: Install dependencies
+        run: pip install --upgrade setuptools wheel numpy Cython twine
+
+      - name: Build source distribution
+        run: python setup.py sdist
+
+      - name: Create release and upload distribution
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/*
+          tag_name: v${{ github.ref }}
+          title: Release ${{ github.ref }}
+          body: |  
+            Changes in this release:  
+            - Add support for anomaly detection  

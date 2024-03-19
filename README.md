@@ -11,6 +11,10 @@ Tested on
 ## Installing from pip
  
 ```bash
+# install dependencies
+pip install numpy>=1.23.5 Cython
+
+# then install time-series-anomaly-detector
 pip install time-series-anomaly-detector
 ```
  
