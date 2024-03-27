@@ -63,6 +63,5 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         files: dist/*
-        tag_name: v${{ github.ref }}
-        title: Release ${{ github.ref }}
+        tag_name: ${{ github.ref }}
         body: ${{ github.event.pull_request.body }}
