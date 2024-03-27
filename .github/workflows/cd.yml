@@ -1,7 +1,8 @@
 name: Build and Release
 on:
-  pull_request:
-    branches: ["main"]
+  push:
+    tags:
+      - 'v*'
   workflow_dispatch:
     inputs:
       branch:
@@ -36,7 +37,11 @@ jobs:
     - name: Rename wheel for manylinux compatibility (Ubuntu only)
       if: runner.os == 'Linux'
       run: |
-        mv dist/*.whl dist/$(ls dist/*.whl | sed 's/-linux/-manylinux1/g')
+        for file in *.whl; do
+          if [[ $file == *linux* ]]; then
+              mv "$file" "${file/-linux/-manylinux1}"
+          fi
+        done
 
     - name: Publish artifacts
       uses: actions/upload-artifact@v2
