@@ -404,10 +404,9 @@ venv/
 dist/
 temp/
 build/
-anomaly_detector.egg-info/
+time_series_anomaly_detector.egg-info/
 anomaly-detector/anomaly_detector/univariate/_anomaly_kernel_cython.c
-
 .idea/
 *.so
-
+*.pyd
 .script\Dockerfile
