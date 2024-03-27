@@ -27,7 +27,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install setuptools wheel twine cython
+        pip install setuptools wheel twine cython numpy
 
     - name: Build a binary wheel and a source tarball
       run: |
