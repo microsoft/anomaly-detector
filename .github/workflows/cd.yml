@@ -61,8 +61,6 @@ jobs:
 
     - name: Publish to GitHub Releases
       uses: softprops/action-gh-release@v1
-      permissions:
-        contents: write
       with:
         files: dist/*
         tag_name: ${{ github.ref }}
