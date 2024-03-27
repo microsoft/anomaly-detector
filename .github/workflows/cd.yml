@@ -52,6 +52,8 @@ jobs:
   release:
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
     - name: Download artifacts
       uses: actions/download-artifact@v2
@@ -60,9 +62,10 @@ jobs:
         path: dist/
 
     - name: Publish to GitHub Releases
-      uses: softprops/action-gh-release@v1
-      with:
-        files: dist/*
-        tag_name: ${{ github.ref }}
-        body: ${{ github.event.pull_request.body }}
-        token: ${{ secrets.RELEASE_KEY }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.RELEASE_KEY }}
+      run: >-
+        gh release create ${{ github.ref_name }}
+        "release binary and source artifacts"
+        --generate-notes
+        --title "Version ${{ github.ref_name }}"
