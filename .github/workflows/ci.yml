@@ -6,9 +6,9 @@ name: CI
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: [ "main" ]
+    branches: ["main", "dev"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main", "dev"]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -19,6 +19,9 @@ jobs:
   test:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10.8", "3.11"]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -28,70 +31,80 @@ jobs:
       - name: Install poetry
         run: pipx install poetry
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: setup python ${{matrix.python-version}}
+        uses: actions/setup-python@v4
         with:
-          python-version: 3.11
-          cache: 'poetry'
+          python-version: ${{matrix.python-version}}
+          cache: "poetry"
 
       - name: install dependence
         working-directory: anomaly-detector
-        run: poetry install
+        run: |
+          poetry env use ${{matrix.python-version}}
+          poetry lock --no-update
+          poetry install
+
+      - name: compile .pyx file
+        run: |
+          pip install Cython
+          pip install numpy
+          python setup.py build_ext --inplace
 
       - name: run the test script
         working-directory: anomaly-detector/tests
-        run: poetry run pytest -k "test_"
+        run: |
+          pip install pytest
+          poetry run pytest test_demo.py
+          poetry run python uvad_test.py
 
       - name: Analyze code with pylint
         run: |
           pip install pylint
           pylint --exit-zero $(git ls-files '*.py')
 
-  test_on_poetry_whl:
+  test_on_setup_whl:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10.8", "3.11"]
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install poetry
-        run: pipx install poetry
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: setup python ${{matrix.python-version}}
+        uses: actions/setup-python@v4
         with:
-          python-version: 3.11
+          python-version: ${{matrix.python-version}}
+          cache: "pip"
 
-      - name: gen .whl file by poetry
-        working-directory: anomaly-detector
-        run: poetry build
+      - name: gen .whl file by setup
+        run: |
+          pip install Cython numpy setuptools wheel
+          python setup.py sdist bdist_wheel
 
       - name: install .whl file
-        run: pip install ./anomaly-detector/dist/*.whl
+        run: pip install ./dist/*.whl
 
       - name: run the test script
         working-directory: anomaly-detector/tests
         run: |
           pip install pytest
           python test_demo.py
-
+          python uvad_test.py
 
   test_on_setup:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: 3.11
-          cache: 'pip'
-          cache-dependency-path: setup.py
-
       - name: install package by setup.py
-        run: pip install .
+        run: |
+          pip install Cython
+          pip install numpy
+          pip install .
 
       - name: run the test script
         working-directory: anomaly-detector/tests
         run: |
           pip install pytest
           python test_demo.py
-
+          python uvad_test.py

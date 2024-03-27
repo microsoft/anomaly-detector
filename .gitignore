@@ -400,3 +400,13 @@ FodyWeavers.xsd
 mlruns/
 mlartifacts/
 model/
+venv/
+dist/
+temp/
+build/
+time_series_anomaly_detector.egg-info/
+anomaly-detector/anomaly_detector/univariate/_anomaly_kernel_cython.c
+.idea/
+*.so
+*.pyd
+.script\Dockerfile

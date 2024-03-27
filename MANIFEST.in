@@ -1,0 +1,10 @@
+recursive-include ./anomaly-detector/*.pyx
+recursive-include ./anomaly-detector/*.c
+recursive-include ./anomaly-detector/*.h
+recursive-include ./anomaly-detector/*.py
+recursive-include ./anomaly-detector/*.txt
+recursive-include ./anomaly-detector/anomaly_detector/univariate *
+include ./README.md
+include ./LICENSE
+include ./requirements.txt
+include ./setup.py
