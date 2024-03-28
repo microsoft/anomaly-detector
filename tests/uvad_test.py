@@ -85,6 +85,7 @@ def call_last(content):
 
     return True, "Success"
 
+
 class TestFunctional(unittest.TestCase):
     def setUp(self):
         self.verificationErrors = []
@@ -117,6 +118,7 @@ class TestFunctional(unittest.TestCase):
                     self.assertTrue(ret[0])
                 except Exception as e:
                     self.verificationErrors.append(f"{case} {ret[1]} {str(e)}")
+
 
 if __name__ == '__main__':
     unittest.main()
