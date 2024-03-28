@@ -46,8 +46,8 @@ jobs:
 
       - name: compile .pyx file
         run: |
-          pip install Cython
-          pip install numpy
+#          pip install Cython
+#          pip install numpy
           python setup.py build_ext --inplace
 
       - name: run the test script

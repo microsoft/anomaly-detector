@@ -51,8 +51,8 @@ if __name__ == "__main__":
 
     extensions = [
         Extension("anomaly_detector.univariate._anomaly_kernel_cython",
-                  ["anomaly-detector/anomaly_detector/univariate/_anomaly_kernel_cython.pyx"],
-                  define_macros=[('CYTHON_TRACE', '1')])
+                  ["anomaly-detector/anomaly_detector/univariate/_anomaly_kernel_cython.c"]
+                  )
     ]
 
 
@@ -77,7 +77,8 @@ if __name__ == "__main__":
         name="time-series-anomaly-detector",
         packages=list(all_package.keys()),
         package_dir=all_package,
-        ext_modules=cythonize(extensions),
+        # ext_modules=cythonize(extensions),
+        ext_modules=extensions,
         include_package_data=True,
         cmdclass=cmdclass,
         version="0.2.2",

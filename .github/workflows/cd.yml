@@ -35,7 +35,7 @@ jobs:
         python setup.py bdist_wheel sdist
 
     - name: Rename wheel for manylinux compatibility (Ubuntu only)
-      if: runner.os == 'Linux'
+      if: runner.os == 'ubuntu-latest'
       run: |
         for file in *.whl; do
           if [[ $file == *linux* ]]; then
