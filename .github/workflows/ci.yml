@@ -18,9 +18,10 @@ jobs:
   # This workflow contains a single job called "build"
   test:
     # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    runs-on: ${{matrix.os}}
     strategy:
       matrix:
+        os: ["ubuntu-latest", "windows", "macos"]
         python-version: ["3.9", "3.10.8", "3.11"]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -38,7 +39,7 @@ jobs:
           python -m pip install -e .
 
       - name: run the test script
-        working-directory: anomaly-detector/tests
+        working-directory: tests
         run: |
           pip install pytest
           pytest test_demo.py
