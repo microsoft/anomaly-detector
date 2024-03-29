@@ -11,11 +11,8 @@ Tested on
 ## Installing from pip
  
 ```bash
-# install dependencies
-pip install numpy>=1.23.5 Cython
-
-# then install time-series-anomaly-detector
-pip install time-series-anomaly-detector
+# install time-series-anomaly-detector
+pip install time-series-anomaly-detector==0.2.3
 ```
  
 ## Installing from Source
@@ -23,17 +20,8 @@ pip install time-series-anomaly-detector
  
 ```bash
 git clone https://github.com/microsoft/anomaly-detector.git
-cd anomaly-detector
+pip install -e .
 ```
- 
-<!-- ## Install -->
- 
- 
-```bash
-pip install -r requirements.txt
-python setup.py sdist bdist_wheel
-pip install ./dist/*.whl
-```  
  
 ## Test
  
