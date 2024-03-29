@@ -25,7 +25,7 @@ jobs:
         run: pip install --upgrade setuptools wheel twine
 
       - name: Build source distribution
-        run: python setup.py sdist
+        run: python setup.py build sdist
 
       - name: Create release and upload distribution
         uses: softprops/action-gh-release@v1
