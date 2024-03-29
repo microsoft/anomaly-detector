@@ -33,7 +33,7 @@ jobs:
 
     environment:
       name: release
-      url: https://test.pypi.org/p/anomaly-detector
+      url: https://test.pypi.org/p/time-series-anomaly-detector
 
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
