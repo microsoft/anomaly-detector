@@ -12,7 +12,7 @@ Tested on
  
 ```bash
 # install time-series-anomaly-detector
-pip install time-series-anomaly-detector==0.2.3
+pip install time-series-anomaly-detector==0.2.4
 ```
  
 ## Installing from Source
