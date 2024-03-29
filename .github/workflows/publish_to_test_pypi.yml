@@ -18,7 +18,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install setuptools wheel twine
     - name: Build a binary wheel and a source tarball
-      run: python3 -m setup.py build sdist
+      run: python3 setup.py build sdist
     - name: Store the distribution packages
       uses: actions/upload-artifact@v3
       with:
