@@ -28,81 +28,23 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
 
-      - name: Install poetry
-        run: pipx install poetry
-
       - name: setup python ${{matrix.python-version}}
         uses: actions/setup-python@v4
         with:
           python-version: ${{matrix.python-version}}
-          cache: "poetry"
 
-      - name: install dependence
-        working-directory: anomaly-detector
+      - name: install package
         run: |
-          poetry env use ${{matrix.python-version}}
-          poetry lock --no-update
-          poetry install
-
-      - name: compile .pyx file
-        run: |
-          python setup.py build_ext --inplace
+          python -m pip install -e .
 
       - name: run the test script
         working-directory: anomaly-detector/tests
         run: |
           pip install pytest
-          poetry run pytest test_demo.py
-          poetry run python uvad_test.py
+          pytest test_demo.py
+          python uvad_test.py
 
       - name: Analyze code with pylint
         run: |
           pip install pylint
           pylint --exit-zero $(git ls-files '*.py')
-
-  test_on_setup_whl:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.9", "3.10.8", "3.11"]
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: setup python ${{matrix.python-version}}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{matrix.python-version}}
-          cache: "pip"
-
-      - name: gen .whl file by setup
-        run: |
-          pip install Cython numpy setuptools wheel
-          python setup.py sdist bdist_wheel
-
-      - name: install .whl file
-        run: pip install ./dist/*.whl
-
-      - name: run the test script
-        working-directory: anomaly-detector/tests
-        run: |
-          pip install pytest
-          python test_demo.py
-          python uvad_test.py
-
-  test_on_setup:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: install package by setup.py
-        run: |
-          pip install Cython
-          pip install numpy
-          pip install .
-
-      - name: run the test script
-        working-directory: anomaly-detector/tests
-        run: |
-          pip install pytest
-          python test_demo.py
-          python uvad_test.py
