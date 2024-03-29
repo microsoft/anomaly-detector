@@ -17,6 +17,7 @@ class GetNumpyInclude(object):
 
 if __name__ == "__main__":
     setup(
+        setup_requires=["numpy"],
         ext_modules=[
             Extension(
                 "anomaly_detector.univariate._anomaly_kernel_cython",
