@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "time-series-anomaly-detector"
-version = "0.2.2"
+version = "0.2.2b"
 description = "Time Series Anomaly Detector"
 readme = "README.md"
 requires-python = ">=3.9.0"
