@@ -8,100 +8,69 @@ on:
       - '*'
 
 jobs:
-  build-on-windows:
+  build:
     name: Build distribution 📦
     runs-on: windows-latest
+    strategy:
+      matrix:
+        python-version:
+          ['3.9', '3.10', '3.11', '3.12']
+
 
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Python
+    - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
-        python-version: "3.x"
+        python-version: ${{ matrix.python-version }}
     - name: Install pypa/build
       run: |
         python -m pip install --upgrade pip
         pip install setuptools wheel twine build
     - name: Build a binary wheel and a source tarball
       run: python3 -m build
-    - name: Rename the distribution files
-      run: |
-        # Get all .whl files in the dist folder
-        $files = Get-ChildItem -Path .\dist\ -Filter *.whl
-
-        # Loop through each file
-        foreach ($file in $files) {
-            # Split the file name by "-"
-            $nameParts = $file.BaseName -split "-"
-        
-            # Replace the third and fourth items by "py3"
-            $nameParts[2] = "py3"
-            $nameParts[3] = "py3"
-        
-            # Assemble the new file name with new items
-            $newName = [string]::Join("-", $nameParts) + ".whl"
-        
-            # Move the old file to new file name
-            Move-Item -Path $file.FullName -Destination .\dist\$newName
-        }
-
     - name: Store the distribution packages
       uses: actions/upload-artifact@v3
       with:
         name: python-package-distributions
         path: dist/
 
-  build-on-linux:
-    name: Build distribution 📦
+  publish-to-testpypi:
+    name: Publish Python 🐍 distribution 📦 to TestPyPI
+    needs:
+      - build
     runs-on: ubuntu-latest
 
+    environment:
+      name: release
+      url: https://test.pypi.org/p/time-series-anomaly-detector
+
+    permissions:
+      id-token: write  # IMPORTANT: mandatory for trusted publishing
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Download all the dists
+        uses: actions/download-artifact@v3
         with:
-          python-version: "3.x"
-      - name: Install pypa/build
-        run: |
-          python -m pip install --upgrade pip
-          pip install setuptools wheel twine build
-      - name: Build a binary wheel and a source tarball
-        run: python3 -m build --wheel
-      - name: Rename the distribution files
-        run: |
-          # Navigate to the dist directory
-          cd dist
-          
-          # Loop over every .whl file
-          for oldname in *.whl
-          do
-              # Split the filename by "-"
-              IFS='-' read -ra nameParts <<< "$oldname"
-          
-              # Replace the third and fourth items by "py3"
-              nameParts[2]="py3"
-              nameParts[3]="py3"
-              nameParts[4]="manylinux1.whl"
-          
-              # Assemble the new filename
-              newName=$(IFS='-'; echo "${nameParts[*]}")
-          
-              # Move the old file to the new filename
-              mv "$oldname" "$newName"
-          done
+          name: python-package-distributions
+          path: dist/
+      - name: Publish distribution 📦 to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
 
       - name: Store the distribution packages
         uses: actions/upload-artifact@v3
         with:
           name: python-package-distributions
           path: dist/
+
   github-release:
     name: >-
       Sign the Python 🐍 distribution 📦 with Sigstore
       and upload them to GitHub Release
     needs:
-    - build-on-windows
-    - build-on-linux
+    - publish-to-testpypi
     runs-on: ubuntu-latest
 
     permissions:
