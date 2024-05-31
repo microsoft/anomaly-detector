@@ -8,7 +8,7 @@ on:
       - '*'
 
 jobs:
-  build:
+  build-on-windows:
     name: Build distribution 📦
     runs-on: windows-latest
 
@@ -51,6 +51,50 @@ jobs:
         name: python-package-distributions
         path: dist/
 
+  build-on-linux:
+    name: Build distribution 📦
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+      - name: Install pypa/build
+        run: |
+          python -m pip install --upgrade pip
+          pip install setuptools wheel twine build
+      - name: Build a binary wheel and a source tarball
+        run: python3 -m build --wheel
+      - name: Rename the distribution files
+        run: |
+          # Navigate to the dist directory
+          cd dist
+          
+          # Loop over every .whl file
+          for oldname in *.whl
+          do
+              # Split the filename by "-"
+              IFS='-' read -ra nameParts <<< "$oldname"
+          
+              # Replace the third and fourth items by "py3"
+              nameParts[2]="py3"
+              nameParts[3]="py3"
+              nameParts[4]="manylinux1"
+          
+              # Assemble the new filename
+              newName=$(IFS='-'; echo "${nameParts[*]}")
+          
+              # Move the old file to the new filename
+              mv "$oldname" "$newName"
+          done
+
+      - name: Store the distribution packages
+        uses: actions/upload-artifact@v3
+        with:
+          name: python-package-distributions
+          path: dist/
   github-release:
     name: >-
       Sign the Python 🐍 distribution 📦 with Sigstore
