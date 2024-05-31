@@ -34,7 +34,7 @@ def leastsq(x, y):
     return a, b
 
 
-def average_filter(values, n=3, fill_to_n = False):
+def average_filter(values, n=3, fill_to_n=False):
     """
     Calculate the sliding window average for the give time series.
     Mathematically, res[i] = sum_{j=i-t+1}^{i} values[j] / t, where t = min(n, i+1)
@@ -45,7 +45,7 @@ def average_filter(values, n=3, fill_to_n = False):
     :return res: list.
         a list of value after the average_filter process.
     """
-    fill_n=n
+    fill_n = n
     if n >= len(values):
         n = len(values)
 
@@ -55,7 +55,7 @@ def average_filter(values, n=3, fill_to_n = False):
 
     for i in range(1, n):
         if fill_to_n:
-            res[i] = (res[i] + ((res[i]-values[i]) / i) * (fill_n-i-1)) / fill_n
+            res[i] = (res[i] + ((res[i] - values[i]) / i) * (fill_n - i - 1)) / fill_n
         else:
             res[i] /= (i + 1)
 
@@ -106,7 +106,7 @@ def guess_trended_period(data):
     broad = fit_trend(data, kind="median", period=max_period)
     if np.any(~np.isfinite(broad)):
         raise Exception(ValueOverflow)
-       
+
     peaks = periodogram_peaks(data - broad)
     if peaks is None:
         return max_period
@@ -259,14 +259,14 @@ def normalize(values, min_max=False):
 def smooth_spikes(data):
     std = data.std() + 1e-8
     mean = data.mean()
-    anomaly_index = [] if std == 0 else np.where(np.abs(data-mean) / std >= 3)[0]
+    anomaly_index = [] if std == 0 else np.where(np.abs(data - mean) / std >= 3)[0]
     series = pd.Series(data, copy=True)
     series[anomaly_index] = np.nan
     return series.interpolate(method='linear', limit_direction='both').values
 
 
 def get_delta(delta, values):
-    d_values = [values[i] - values[i-1] for i in range(1, len(values))]
+    d_values = [values[i] - values[i - 1] for i in range(1, len(values))]
     d_values = [d_values[delta]] * (delta + 1) + d_values[delta:]
     return d_values
 
