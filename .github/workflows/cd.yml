@@ -81,7 +81,7 @@ jobs:
               # Replace the third and fourth items by "py3"
               nameParts[2]="py3"
               nameParts[3]="py3"
-              nameParts[4]="manylinux1"
+              nameParts[4]="manylinux1.whl"
           
               # Assemble the new filename
               newName=$(IFS='-'; echo "${nameParts[*]}")
