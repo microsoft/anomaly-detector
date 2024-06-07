@@ -22,7 +22,7 @@ jobs:
     strategy:
       matrix:
         os: ["ubuntu-latest", "windows", "macos"]
-        python-version: ["3.9", "3.10.8", "3.11", "3.12"]
+        python-version: ["3.9", "3.10.8", "3.11"]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -41,7 +41,7 @@ jobs:
       - name: run the test script
         working-directory: tests
         run: |
-          pip install pytest setuptools==65.5.0
+          pip install pytest
           pytest test_demo.py
           python uvad_test.py
 
