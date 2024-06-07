@@ -41,7 +41,7 @@ jobs:
       - name: run the test script
         working-directory: tests
         run: |
-          pip install pytest setuptools-65.5.0
+          pip install pytest setuptools=65.5.0
           pytest test_demo.py
           python uvad_test.py
 
