@@ -4,6 +4,7 @@ Tested on
 [![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-390/)
 [![Python 3.10](https://img.shields.io/badge/python-3.10.8-blue.svg)](https://www.python.org/downloads/release/python-3108/)
 [![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/release/python-3110/)
+[![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-3120/)
 
 
 # Getting Started
@@ -12,7 +13,7 @@ Tested on
  
 ```bash
 # install time-series-anomaly-detector
-pip install time-series-anomaly-detector==0.2.4
+pip install time-series-anomaly-detector==0.2.6
 ```
  
 ## Installing from Source
