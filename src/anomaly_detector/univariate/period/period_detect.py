@@ -14,5 +14,5 @@ def period_detection(series, trend_type=DEFAULT_TREND_TYPE, thresh=DEFAULT_PERIO
         period = SimpleDetector.detect(series, granularity, interval)
         if period:
             return [period, 0] if return_period_source else period
-    specturm_period = SpectrumDetector.detect(series, trend_type=trend_type, thresh=thresh, min_var=min_var, detector_type=detector_type)
-    return [specturm_period, 1] if return_period_source else specturm_period 
+    spectrum_period = SpectrumDetector.detect(series, trend_type=trend_type, thresh=thresh, min_var=min_var, detector_type=detector_type)
+    return [spectrum_period, 1] if return_period_source else spectrum_period
