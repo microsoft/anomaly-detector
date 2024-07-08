@@ -100,7 +100,7 @@ jobs:
         name: cibw-all-files
         path: dist
 
-    - name: Sign the dists with Sigstore
+    - name: Sign the dist with Sigstore
       uses: sigstore/gh-action-sigstore-python@v2.1.1
       with:
         inputs: >-
