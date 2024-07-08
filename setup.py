@@ -3,7 +3,7 @@
 # ---------------------------------------------------------
 
 from setuptools import setup, Extension
-
+from Cython.Build import cythonize
 
 class GetNumpyInclude(object):
     """A lazy include path for numpy.
@@ -16,13 +16,15 @@ class GetNumpyInclude(object):
 
 
 if __name__ == "__main__":
+    extensions = [
+        Extension(
+            "anomaly_detector.univariate._anomaly_kernel_cython",
+            ["src/anomaly_detector/univariate/_anomaly_kernel_cython.pyx"],
+            include_dirs=[GetNumpyInclude()]
+        )
+    ]
+
     setup(
         setup_requires=["numpy"],
-        ext_modules=[
-            Extension(
-                "anomaly_detector.univariate._anomaly_kernel_cython",
-                ["src/anomaly_detector/univariate/_anomaly_kernel_cython.c"],
-                include_dirs=[GetNumpyInclude()]
-            )
-        ]
+        ext_modules=cythonize(extensions)
     )
