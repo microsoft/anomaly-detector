@@ -54,4 +54,4 @@ dependencies = [
 where = ["src"]
 
 [tool.cibuildwheel]
-build = ["cp3.10-*"]
+skip = "pp*"
