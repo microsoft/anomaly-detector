@@ -65,8 +65,10 @@ jobs:
       - name: Download all the dists
         uses: actions/download-artifact@v3
         with:
-          name: python-package-distributions
-          path: ./wheelhouse/
+          pattern: cibw-*
+          path: dist
+          merge-multiple: true
+
       - name: Publish distribution 📦 to TestPyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
@@ -75,9 +77,8 @@ jobs:
       - name: Store the distribution packages
         uses: actions/upload-artifact@v3
         with:
-          pattern: cibw-*
+          name: cibw-all-files
           path: dist
-          merge-multiple: true
 
 
   github-release:
@@ -96,9 +97,8 @@ jobs:
     - name: Download all the dists
       uses: actions/download-artifact@v3
       with:
-        pattern: cibw-*
+        name: cibw-all-files
         path: dist
-        merge-multiple: true
 
     - name: Sign the dists with Sigstore
       uses: sigstore/gh-action-sigstore-python@v2.1.1
