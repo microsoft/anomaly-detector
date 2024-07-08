@@ -26,11 +26,10 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Install requirements
-      run: python -m pip install cibuildwheel==2.19.2 cython==3.0.10
-
-    - name: Build wheels
-      run: python -m cibuildwheel --output-dir wheelhouse
+    - name: Install dep & Build wheels
+      run: |
+        python -m pip install cibuildwheel==2.19.2 cython==3.0.10
+        python -m cibuildwheel --output-dir wheelhouse
 
     - uses: actions/upload-artifact@v4
       with:
