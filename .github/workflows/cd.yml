@@ -8,7 +8,7 @@ on:
       - '*'
 
 jobs:
-  build:
+  build_wheels:
     name: Build wheels on ${{ matrix.os }} 📦
     runs-on: ${{ matrix.os }}
     strategy:
@@ -100,7 +100,7 @@ jobs:
         name: cibw-all-files
         path: dist
 
-    - name: Sign the dist with Sigstore
+    - name: Sign the dists with Sigstore
       uses: sigstore/gh-action-sigstore-python@v2.1.1
       with:
         inputs: >-
