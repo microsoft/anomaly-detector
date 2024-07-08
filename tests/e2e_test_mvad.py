@@ -50,7 +50,7 @@ def main():
     eval_data = eval_data.set_index("timestamp", drop=True)
     results = loaded_model.predict(data=eval_data)
     pprint(results)
-    with open("result1.json", "w") as f:
+    with open("result1.json", "w", encoding="utf-8") as f:
         json.dump(results, f)
 
     eval_data = np.random.randn(201, 20)
@@ -58,7 +58,7 @@ def main():
     eval_data = pd.DataFrame(eval_data, columns=columns)
     results = loaded_model.predict(data=eval_data)
     pprint(results)
-    with open("result2.json", "w") as f:
+    with open("result2.json", "w", encoding="utf-8") as f:
         json.dump(results, f)
 
 

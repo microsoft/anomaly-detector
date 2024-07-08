@@ -102,7 +102,7 @@ class TestFunctional(unittest.TestCase):
         for i, case in enumerate(cases):
             
             print(f"case {i} {case}")
-            with open(os.path.join(working_dir, sub_dir, case), "r") as f:
+            with open(os.path.join(working_dir, sub_dir, case), "r", encoding="utf-8") as f:
                 content = json.load(f)
             
             if content['type'] == 'entire':

@@ -15,7 +15,7 @@ TEST_FILE_ROOT = "testCase/testCase_10000_20/"
 
 
 def read_yaml_config(path: str) -> dict:
-    with open(path, 'r') as file:
+    with open(path, 'r', encoding="utf-8") as file:
         yaml_data = yaml.load(file, Loader=yaml.FullLoader)
     return yaml_data
 
