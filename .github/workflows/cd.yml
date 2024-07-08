@@ -51,7 +51,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: python-package-distributions
-          path: dist/
+          path: ./wheelhouse/
       - name: Publish distribution 📦 to TestPyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
@@ -61,7 +61,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: python-package-distributions
-          path: dist/
+          path: ./wheelhouse/
 
   github-release:
     name: >-
@@ -80,13 +80,13 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: python-package-distributions
-        path: dist/
+        path: ./wheelhouse/
     - name: Sign the dists with Sigstore
       uses: sigstore/gh-action-sigstore-python@v2.1.1
       with:
         inputs: >-
-          ./dist/*.tar.gz
-          ./dist/*.whl
+#          ./dist/*.tar.gz
+          ./wheelhouse/*.whl
     - name: Create GitHub Release
       env:
         GITHUB_TOKEN: ${{ github.token }}
@@ -103,5 +103,5 @@ jobs:
       # sigstore-produced signatures and certificates.
       run: >-
         gh release upload
-        '${{ github.ref_name }}' dist/**
+        '${{ github.ref_name }}' ./wheelhouse/**
         --repo '${{ github.repository }}'
