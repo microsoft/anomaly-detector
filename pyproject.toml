@@ -55,7 +55,7 @@ where = ["src"]
 
 [tool.cibuildwheel]
 skip = "pp*"
-before-test = "cd {project}/tests"
+before-test = "cd {package}/tests"
 test-command = [
     "python uvad_test.py",
     "python test_demo.py"
