@@ -3,7 +3,7 @@
 # ---------------------------------------------------------
 
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
 
 class MultiADConstants:
@@ -47,6 +47,6 @@ class MultiADConfig:
     save: str = "model"
     train_ratio: float = 0.8
     val_ratio: float = 0.1
-    normalize_base: NormalizeBase = None
+    normalize_base: Optional[NormalizeBase] = None
     threshold_window: int = MultiADConstants.DEFAULT_THRESHOLD_WINDOW
     level: float = 0.8
