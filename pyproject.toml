@@ -54,7 +54,7 @@ dependencies = [
 where = ["src"]
 
 [tool.cibuildwheel]
-skip = "pp*"
+skip = ["pp*", "*-musllinux*"]
 test-command = [
     "python {project}/tests/uvad_test.py",
     "python {project}/tests/test_demo.py"
