@@ -409,3 +409,4 @@ time_series_anomaly_detector.egg-info/
 *.so
 *.pyd
 .script\Dockerfile
+src/anomaly_detector/univariate/_anomaly_kernel_cython.c
