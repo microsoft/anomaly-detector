@@ -10,8 +10,10 @@ import yaml
 import numpy as np
 from anomaly_detector.multivariate.model import MultivariateAnomalyDetector
 from anomaly_detector.common.exception import DataFormatError, InvalidParameterError
+import os
 
-TEST_FILE_ROOT = "testCase/testCase_10000_20/"
+WORKING_DIR = os.path.dirname(os.path.realpath(__file__))
+TEST_FILE_ROOT = "testCase/testCase_10000_20"
 
 
 def read_yaml_config(path: str) -> dict:
@@ -26,13 +28,13 @@ class TestAnomalyDetector:
 
     def test_invalid_value(self):
         with pytest.raises(DataFormatError, match="Cannot convert values to float"):
-            train_data = pd.read_csv(TEST_FILE_ROOT + "invalid_value.csv")
-            params = read_yaml_config(TEST_FILE_ROOT + "config.yaml")["normal_config"]
+            train_data = pd.read_csv(os.path.join(WORKING_DIR, TEST_FILE_ROOT, "invalid_value.csv"))
+            params = read_yaml_config(os.path.join(WORKING_DIR, TEST_FILE_ROOT, "config.yaml"))["normal_config"]
             self.model.fit(train_data, params)
 
     def test_timestamp_not_exist(self):
-        train_data = pd.read_csv(TEST_FILE_ROOT + "no_timestamp.csv")
-        params = read_yaml_config(TEST_FILE_ROOT + "config.yaml")["normal_config"]
+        train_data = pd.read_csv(os.path.join(WORKING_DIR, TEST_FILE_ROOT, "no_timestamp.csv"))
+        params = read_yaml_config(os.path.join(WORKING_DIR, TEST_FILE_ROOT, "config.yaml"))["normal_config"]
         self.model.fit(train_data, params)
 
     def test_normal_predict(self):
@@ -40,37 +42,37 @@ class TestAnomalyDetector:
         eval_data[-1, :] += 100
         columns = [f"variable_{i}" for i in range(20)]
         eval_data = pd.DataFrame(eval_data, columns=columns)
-        with open(TEST_FILE_ROOT + 'model.pkl', 'rb') as f:
+        with open(os.path.join(WORKING_DIR, TEST_FILE_ROOT, 'model.pkl'), 'rb') as f:
             loaded_model = pickle.load(f)
             loaded_model.predict(eval_data)
 
     def test_inference_data_smaller_than_window(self):
         with pytest.raises(ValueError):
-            eval_data = pd.read_csv(TEST_FILE_ROOT + "inference_data_smaller_than_window.csv")
+            eval_data = pd.read_csv(os.path.join(WORKING_DIR, TEST_FILE_ROOT, "inference_data_smaller_than_window.csv"))
             eval_data = eval_data.set_index("timestamp", drop=True)
-            with open(TEST_FILE_ROOT + 'model.pkl', 'rb') as f:
+            with open(os.path.join(WORKING_DIR, TEST_FILE_ROOT,'model.pkl'), 'rb') as f:
                 loaded_model = pickle.load(f)
                 loaded_model.predict(eval_data)
 
     def test_invalid_fillna_config(self):
         with pytest.raises(InvalidParameterError):
-            train_data = pd.read_csv(TEST_FILE_ROOT + "normal_data.csv")
+            train_data = pd.read_csv(os.path.join(WORKING_DIR, TEST_FILE_ROOT, "normal_data.csv"))
             train_data = train_data.set_index("timestamp", drop=True)
-            params = read_yaml_config(TEST_FILE_ROOT + "config.yaml")["invalid_fillna_config"]
+            params = read_yaml_config(os.path.join(WORKING_DIR, TEST_FILE_ROOT, "config.yaml"))["invalid_fillna_config"]
             self.model.fit(train_data, params)
 
     def test_invalid_fillna_value(self):
         with pytest.raises(InvalidParameterError):
-            train_data = pd.read_csv(TEST_FILE_ROOT + "normal_data.csv")
+            train_data = pd.read_csv(os.path.join(WORKING_DIR, TEST_FILE_ROOT, "normal_data.csv"))
             train_data = train_data.set_index("timestamp", drop=True)
-            params = read_yaml_config(TEST_FILE_ROOT + "config.yaml")["invalid_fillna_value"]
+            params = read_yaml_config(os.path.join(WORKING_DIR, TEST_FILE_ROOT, "config.yaml"))["invalid_fillna_value"]
             self.model.fit(train_data, params)
 
     def test_invalid_window_value(self):
         with pytest.raises(Exception):
-            train_data = pd.read_csv(TEST_FILE_ROOT + "normal_data.csv")
+            train_data = pd.read_csv(os.path.join(WORKING_DIR, TEST_FILE_ROOT, "normal_data.csv"))
             train_data = train_data.set_index("timestamp", drop=True)
-            params = read_yaml_config(TEST_FILE_ROOT + "config.yaml")["invalid_window_value"]
+            params = read_yaml_config(os.path.join(WORKING_DIR, TEST_FILE_ROOT, "config.yaml"))["invalid_window_value"]
             self.model.fit(train_data, params)
 
     def test_response(self):
@@ -82,11 +84,11 @@ class TestAnomalyDetector:
                 training_data = np.random.randn(data_len, var_len)
                 columns = [f"variable_{i}" for i in range(var_len)]
                 training_data = pd.DataFrame(training_data, columns=columns)
-                timestamps = pd.date_range(start="2023-01-03", periods=data_len, freq="H")
+                timestamps = pd.date_range(start="2023-01-03", periods=data_len, freq="h")
                 training_data["timestamp"] = timestamps.strftime("%Y-%m-%dT%H:%M:%SZ")
                 training_data = training_data.set_index("timestamp", drop=True)
 
-                params = read_yaml_config(TEST_FILE_ROOT + "config.yaml")["normal_config"]
+                params = read_yaml_config(os.path.join(WORKING_DIR, TEST_FILE_ROOT, "config.yaml"))["normal_config"]
                 model = MultivariateAnomalyDetector()
                 print(var_len, data_len)
                 model.fit(training_data, params=params)
