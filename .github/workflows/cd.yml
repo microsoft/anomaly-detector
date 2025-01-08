@@ -27,7 +27,7 @@ jobs:
 
     - name: Build wheels
       env:
-        CIBW_ARCHS_WINDOWS: amd64
+        CIBW_ARCHS_WINDOWS: x86_64
       run: python -m cibuildwheel --output-dir wheelhouse
 
     - uses: actions/upload-artifact@v4
