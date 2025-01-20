@@ -167,7 +167,6 @@ class AnomalyDetectionModel:
 
         if full_values is not None and filled_tags is not None:
             do_fill_up = True
-        print("ADPointCountAfterFillUp", 1, count=self.__fill_up.all_count // 1000)
 
         actual_detection_series = self.__values if full_values is None else full_values
 
@@ -188,7 +187,7 @@ class AnomalyDetectionModel:
                 last_value=last_value)
 
         elif self.__detector['name'] == 'hbos':
-            from anomaly_detector.model.hbos_detection import hbos_detection
+            from anomaly_detector.univariate.model.hbos_detection import hbos_detection
             results, model_id = hbos_detection(
                 series=actual_detection_series, period=period,
                 threshold=self.__detector['parameters']['threshold'],
