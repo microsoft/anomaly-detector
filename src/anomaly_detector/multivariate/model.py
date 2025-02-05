@@ -151,7 +151,7 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
         self.model.to(self.config.device)
 
     def load_checkpoint(self, model_path):
-        ckpt = torch.load(model_path, weights_only=False)
+        ckpt = torch.load(model_path)
         self.config = ckpt["config"]
         self.model = MultivariateGraphAttnDetector(self.config)
         self.model.load_state_dict(ckpt["state_dict"])
