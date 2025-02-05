@@ -34,7 +34,7 @@ from anomaly_detector.multivariate.util import (
     get_multiple_variables_pct_weight_score,
     get_threshold,
 )
-from torch import nn
+from dataclasses import asdict
 from tqdm import tqdm
 
 
@@ -141,7 +141,7 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
         self.model.cpu()
         ckpt = {
             "state_dict": self.model.state_dict(),
-            "config": self.config,
+            "config": asdict(self.config),
             "pct_weight": self.pct_weight,
             "threshold": self.threshold,
             "train_score_max": self.train_score_max,
@@ -151,8 +151,8 @@ class MultivariateAnomalyDetector(BaseAnomalyDetector):
         self.model.to(self.config.device)
 
     def load_checkpoint(self, model_path):
-        ckpt = torch.load(model_path)
-        self.config = ckpt["config"]
+        ckpt = torch.load(model_path, weights_only=False)
+        self.config = MultiADConfig(**ckpt["config"])
         self.model = MultivariateGraphAttnDetector(self.config)
         self.model.load_state_dict(ckpt["state_dict"])
         self.pct_weight = ckpt["pct_weight"]
