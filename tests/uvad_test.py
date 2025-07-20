@@ -100,10 +100,18 @@ class TestFunctional(unittest.TestCase):
         working_dir = os.path.dirname(os.path.realpath(__file__))
         cases = os.listdir(os.path.join(working_dir, sub_dir))
         for i, case in enumerate(cases):
-            
+            if case.startswith("._"):
+                continue
             print(f"case {i} {case}")
-            with open(os.path.join(working_dir, sub_dir, case), "r") as f:
-                content = json.load(f)
+            file_path = os.path.join(working_dir, sub_dir, case)
+            with open(file_path, "r", encoding="utf-8", errors="replace") as f:
+                raw = f.read()
+                if not raw.strip():
+                    self.fail(f"Empty JSON file: {file_path}")
+                try:
+                    content = json.loads(raw)   
+                except json.JSONDecodeError as e:
+                    self.fail(f"Invalid JSON in {file_path}: {e}")
             
             if content['type'] == 'entire':
                 ret = call_entire(content)
