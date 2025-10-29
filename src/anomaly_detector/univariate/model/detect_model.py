@@ -7,7 +7,6 @@ from anomaly_detector.univariate.model.seasonal_series import seasonal_series_de
 from anomaly_detector.univariate.resource.error_message import *
 from anomaly_detector.univariate.model.series_compete_processor import fill_up_on_demand, period_detection_with_filled_values
 from anomaly_detector.univariate.model.spectral_residual_model import spectral_residual_detection
-from anomaly_detector.univariate.model.hbos_detection import hbos_detection
 from anomaly_detector.univariate.resource.error_message import NotEnoughPointsForSeasonalData, InvalidDetectorNameWithParameters
 from anomaly_detector.univariate.util import Granularity, EPS, FillUpMode
 from anomaly_detector.common.exception import AnomalyDetectionRequestError
@@ -185,13 +184,6 @@ class AnomalyDetectionModel:
 
         actual_detection_series = self.__values if full_values is None else full_values
 
-        available_detectors = {
-            'seasonal_series': seasonal_series_detection,
-            'hbos': hbos_detection,
-            'spectral_residual': spectral_residual_detection,
-            'dynamic_threshold': dynamic_threshold_detection
-        }
-
         if self.__detector['name'] == 'seasonal_series':
             if period <= 0:
                 raise AnomalyDetectionRequestError(error_code='InvalidDetector',
@@ -208,8 +200,9 @@ class AnomalyDetectionModel:
                 "max_anomaly_ratio": self.__detector['parameters']['maxAnomalyRatio'],
                 "last_value": last_value
             }
-            results, model_id = available_detectors['seasonal_series'](series=actual_detection_series, **args)
+            results, model_id = seasonal_series_detection(series=actual_detection_series, **args)
         elif self.__detector['name'] == 'hbos':
+            from anomaly_detector.univariate.model.hbos_detection import hbos_detection
             args = {
                 "period": period,
                 "threshold": self.__detector['parameters']['threshold'],
