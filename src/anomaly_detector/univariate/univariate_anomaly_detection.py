@@ -24,6 +24,12 @@ class UnivariateAnomalyDetector(BaseAnomalyDetector):
         self._error_msg = None
         self._error_code = 'BadArgument'
         self._detect_mode = detect_mode
+        self._detector = None
+
+    @property
+    def detector(self):
+        """Get the underlying anomaly detection model instance."""
+        return self._detector
 
     def is_timestamp_ascending(self, series):
         count = len(series)
@@ -312,6 +318,7 @@ class UnivariateAnomalyDetector(BaseAnomalyDetector):
                     SuggestedWindow: suggested_window
                 }}             
             ]
+        self._detector = detector
         return result_list
     
 
