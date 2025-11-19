@@ -120,25 +120,11 @@ class AnomalyDetectionModel:
         self.__need_spectrum_period = need_spectrum_period
         self.__period_source = None
         self.__detector = detector
-        
-        # Inspection attributes (do not affect class behavior)
-        self._detector_name = None
-        self._detector_args = None
-
         # self.__detect_mode = detect_mode
 
         # if detect_mode is None:
             # raise ValueError("detect_mode is a required parameter.")
 
-    @property
-    def detector_name(self):
-        """Get the name of the anomaly detection model."""
-        return self._detector_name
-    
-    @property
-    def detector_args(self):
-        """Get the arguments for the anomaly detection model."""
-        return self._detector_args
     
     def __refine_max_ratio(self):
         return max((1 - self.__majority_ratio) * self.__max_ratio, min(0.05, self.__max_ratio))
@@ -192,57 +178,47 @@ class AnomalyDetectionModel:
                                                    ))
 
             adjust_trend = True if last_value is not None else False
-            args = {
-                "period": period,
-                "alpha": self.__detector['parameters']['alpha'],
-                "adjust_trend": adjust_trend,
-                "need_trend": self.__need_trend,
-                "max_anomaly_ratio": self.__detector['parameters']['maxAnomalyRatio'],
-                "last_value": last_value
-            }
-            results, model_id = seasonal_series_detection(series=actual_detection_series, **args)
+            results, model_id = seasonal_series_detection(
+                series=actual_detection_series, period=period,
+                alpha=self.__detector['parameters']['alpha'],
+                adjust_trend=adjust_trend,
+                need_trend=self.__need_trend,
+                max_anomaly_ratio=self.__detector['parameters']['maxAnomalyRatio'],
+                last_value=last_value)
+
         elif self.__detector['name'] == 'hbos':
             from anomaly_detector.univariate.model.hbos_detection import hbos_detection
-            args = {
-                "period": period,
-                "threshold": self.__detector['parameters']['threshold'],
-                "outlier_fraction": self.__detector['parameters']['outlierFraction'],
-                "need_trend": self.__need_trend,
-                "last_value": last_value
-            }
-            results, model_id = hbos_detection(series=actual_detection_series, **args)
+            results, model_id = hbos_detection(
+                series=actual_detection_series, period=period,
+                threshold=self.__detector['parameters']['threshold'],
+                outlier_fraction=self.__detector['parameters']['outlierFraction'],
+                need_trend=self.__need_trend,
+                last_value=last_value
+            )
         elif self.__detector['name'] == 'spectral_residual':
-            args = {
-                "threshold": self.__detector['parameters']['threshold'],
-                "max_anomaly_ratio": self.__detector['parameters']['maxAnomalyRatio'],
-                "need_trend": self.__need_trend,
-                "last_value": last_value
-            }
-            results, model_id = spectral_residual_detection(series=actual_detection_series, **args)
+            results, model_id = spectral_residual_detection(
+                series=actual_detection_series, threshold=self.__detector['parameters']['threshold'],
+                max_anomaly_ratio=self.__detector['parameters']['maxAnomalyRatio'],
+                need_trend=self.__need_trend,
+                last_value=last_value)
         elif self.__detector['name'] == 'dynamic_threshold':
             if period != 0:
                 raise AnomalyDetectionRequestError(error_code='InvalidDetector',
                                                    error_msg=InvalidDetectorNameWithParameters.format(
                                                        self.__detector['name']
                                                    ))
-            args = {
-                "alpha": self.__detector['parameters']['alpha'],
-                "max_anomaly_ratio": self.__detector['parameters']['maxAnomalyRatio'],
-                "need_trend": self.__need_trend,
-                "last_value": last_value
-            }
+
             results, model_id = dynamic_threshold_detection(
-                series=actual_detection_series,
-                trend_values=trend_detection(actual_detection_series),
-                **args
-            )
+                series=actual_detection_series, trend_values=trend_detection(actual_detection_series),
+                alpha=self.__detector['parameters']['alpha'],
+                max_anomaly_ratio=self.__detector['parameters']['maxAnomalyRatio'],
+                need_trend=self.__need_trend,
+                last_value=last_value)
         else:
             raise AnomalyDetectionRequestError(error_code='InvalidDetector',
                                                error_msg=InvalidDetectorNameWithParameters.format(
                                                    self.__detector['name']
                                                ))
-        self._detector_name = model_id.name
-        self._detector_args = args
 
         if full_values is not None and filled_tags is not None:
             results = results.drop(results.index[[i for i in range(len(filled_tags)) if filled_tags[i] is True]])
@@ -285,16 +261,10 @@ class AnomalyDetectionModel:
 
         if period > 1:
             adjust_trend = True if last_value is not None else False
-            args = {
-                "series": actual_detection_series,
-                "period": period,
-                "alpha": self.__alpha,
-                "adjust_trend": adjust_trend,
-                "need_trend": self.__need_trend,
-                "max_anomaly_ratio": max_ratio,
-                "last_value": last_value
-            }
-            results, model_id = seasonal_series_detection(**args)
+            results, model_id = seasonal_series_detection(
+                series=actual_detection_series, period=period, alpha=self.__alpha,
+                max_anomaly_ratio=max_ratio, adjust_trend=adjust_trend, need_trend=self.__need_trend, last_value=last_value)
+
         else:
             if should_trigger_sr(self.__gran, self.__interval, actual_detection_series):
                 args = {
@@ -317,10 +287,8 @@ class AnomalyDetectionModel:
                     "last_value": last_value
                 }
                 results, model_id = dynamic_threshold_detection(**args)
-                results = merge_with_delta(results, dynamic_threshold_detection, args)
-
-        self._detector_name = model_id.name
-        self._detector_args = {k: v for k, v in args.items() if k != "series"}
+                results = merge_with_delta(results, dynamic_threshold_detection, args) 
+                
 
         if full_values is not None and filled_tags is not None:
             results = results.drop(results.index[[i for i in range(len(filled_tags)) if filled_tags[i] is True]])
