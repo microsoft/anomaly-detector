@@ -400,7 +400,6 @@ FodyWeavers.xsd
 mlruns/
 mlartifacts/
 venv/
-.venv/
 dist/
 temp/
 build/
