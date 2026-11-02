@@ -56,7 +56,7 @@ def get_multiple_variables_pct_weight_score(data, window, timestamp_col="timesta
         raise TypeError(f"Unsupported type {type(data)}")
     variables_num = data.shape[1]
     pct_weight = np.empty(variables_num, float)
-    i = 0
+    
     for i in range(variables_num):
         s_data = pd.Series(data[:, i] + 0.0001)
         data1 = np.maximum(
@@ -65,7 +65,7 @@ def get_multiple_variables_pct_weight_score(data, window, timestamp_col="timesta
         )
         data2 = np.clip(data1, a_max=2, a_min=0)
         pct_weight[i] = data2.rolling(window).max().mean()
-        i = i + 1
+        
     reweight_num = np.count_nonzero(pct_weight > max_pct_weight)
     reweight_value = reweight_num / variables_num
     for i in range(variables_num):
